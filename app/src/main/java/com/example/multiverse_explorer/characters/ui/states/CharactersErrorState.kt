@@ -1,0 +1,37 @@
+package com.example.multiverse_explorer.characters.ui.states
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.example.multiverse_explorer.R
+
+@Composable
+fun CharactersErrorState(
+    modifier: Modifier
+){
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+    ) {
+        Text(
+            text = "Something goes wrong, please try again :(.",
+            fontWeight = FontWeight.Bold,
+            color = Color.LightGray,
+            modifier = Modifier.size(200.dp)
+        )
+        Image(
+            painter = painterResource(R.drawable.error_image),
+            contentDescription = "Error Image",
+        )
+    }
+}

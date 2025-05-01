@@ -1,6 +1,6 @@
 [versions]
-agp = "8.9.1"
-kotlin = "2.0.21"
+agp = "8.9.2"
+kotlin = "2.1.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -8,6 +8,17 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
+retrofit-version = "2.11.0"
+moshi-retrofit-version = "2.11.0"
+moshi-version = "1.15.2"
+moshi-kotlin-version = "1.15.2"
+moshi-codegen-version = "1.15.2"
+lifecycle-version = "2.8.7"
+coil-version = "3.0.4"
+coroutines-version = "1.9.0"
+ksp-version = "2.1.0-1.0.29"
+hilt-version = "2.52"
+hilt-compose-version = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,8 +36,33 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+#retrofit
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit-version" }
+moshi-retrofit = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "moshi-retrofit-version" }
+
+#moshi
+moshi =  { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi-version"}
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi-kotlin-version"}
+moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi-codegen-version"}
+
+#lifecycle-viewmodel
+view-model = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle-version" }
+
+#coil
+coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil-version" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil-version" }
+
+#coroutines
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines-version" }
+
+#hilt
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-version" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
+hilt-compose = {group ="androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-compose-version"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-version" }
