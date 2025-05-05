@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.multiverse_explorer.R
@@ -24,14 +25,14 @@ fun CharactersErrorState(
         modifier = modifier
     ) {
         Text(
-            text = "Something goes wrong, please try again :(.",
+            text = stringResource(R.string.generic_error),
             fontWeight = FontWeight.Bold,
             color = Color.LightGray,
             modifier = Modifier.size(200.dp)
         )
         Image(
             painter = painterResource(R.drawable.error_image),
-            contentDescription = "Error Image",
+            contentDescription = stringResource(R.string.error_image_description),
         )
     }
 }

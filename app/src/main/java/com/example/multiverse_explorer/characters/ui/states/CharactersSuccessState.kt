@@ -16,16 +16,19 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.multiverse_explorer.R
@@ -48,7 +51,7 @@ fun CharactersSuccessState(
 }
 
 @Composable
-fun TitleApp(){
+fun TitleApp() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -60,7 +63,7 @@ fun TitleApp(){
             modifier = Modifier.size(40.dp),
         )
         Text(
-            text = "RickAndMortyApp",
+            text = stringResource(R.string.title_app),
             style = MaterialTheme.typography.headlineLarge,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.ExtraBold,
@@ -108,7 +111,7 @@ fun CharacterInfo(character: CharacterDomain) {
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 30.dp) ,
+            modifier = Modifier.padding(bottom = 30.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -134,3 +137,38 @@ fun CharacterInfo(character: CharacterDomain) {
         )
     }
 }
+
+
+@Preview(showBackground = true)
+@Composable
+fun CharactersSuccessStatePreview() {
+    val sampleCharacters = getSampleCharacters()
+    CharactersSuccessState(
+        modifier = Modifier.fillMaxSize(),
+        characters = sampleCharacters
+    )
+}
+
+fun getSampleCharacters(): List<CharacterDomain> = listOf(
+    CharacterDomain(
+        id = 1,
+        name = "Rick",
+        status = "Alive",
+        species = "Human",
+        image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg"
+    ),
+    CharacterDomain(
+        id = 2,
+        name = "Morty Smith",
+        status = "Alive",
+        species = "Human",
+        image = "https://rickandmortyapi.com/api/character/avatar/2.jpeg"
+    ),
+    CharacterDomain(
+        id = 3,
+        name = "Summer Smith",
+        status = "Alive",
+        species = "Human",
+        image = "https://rickandmortyapi.com/api/character/avatar/3.jpeg"
+    )
+)
