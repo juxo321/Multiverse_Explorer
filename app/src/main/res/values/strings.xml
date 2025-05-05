@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Multiverse_Explorer</string>
+    <string name="generic_error">Something goes wrong, please try again :(.</string>
+    <string name="error_image_description">Error Image</string>
+    <string name="title_app">RickAndMortyApp</string>
+
+
 </resources>
