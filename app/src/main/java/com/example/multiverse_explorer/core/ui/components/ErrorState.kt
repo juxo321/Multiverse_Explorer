@@ -1,4 +1,4 @@
-package com.example.multiverse_explorer.characters.ui.states
+package com.example.multiverse_explorer.core.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.multiverse_explorer.R
 
 @Composable
-fun CharactersErrorState(
+fun ErrorState(
     modifier: Modifier
 ){
     Column(

@@ -1,7 +1,6 @@
 package com.example.multiverse_explorer.characters.ui.states
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,18 +14,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.IconToggleButtonColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,73 +40,84 @@ import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 
 @Composable
 fun CharactersSuccessState(
-    modifier: Modifier,
-    characters: List<CharacterDomain>
+    characters: List<CharacterDomain>,
+    navigateToCharacterDetail: (characterId: Int) -> Unit,
+    toggleFavorite: (characterId: Int) -> Unit,
+    modifier: Modifier
 ) {
     LazyColumn(modifier = modifier) {
-        item {
-            TitleApp()
-        }
         items(characters) {
-            CharacterItem(it)
+            CharacterItem(
+                character = it,
+                navigateToCharacterDetail = navigateToCharacterDetail,
+                toggleFavorite = toggleFavorite
+            )
         }
     }
 }
 
 @Composable
-fun TitleApp() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Image(
-            painter = painterResource(R.drawable.icon_app),
-            contentDescription = "app_icon",
-            modifier = Modifier.size(40.dp),
-        )
-        Text(
-            text = stringResource(R.string.title_app),
-            style = MaterialTheme.typography.headlineLarge,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .padding(vertical = 16.dp, horizontal = 4.dp)
-        )
-    }
-}
+fun CharacterItem(
+    character: CharacterDomain,
+    navigateToCharacterDetail: (characterId: Int) -> Unit,
+    toggleFavorite: (characterId: Int) -> Unit,
+) {
 
-
-@Composable
-fun CharacterItem(character: CharacterDomain) {
     ElevatedCard(
+        onClick = { navigateToCharacterDetail(character.id) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp)
 
     ) {
-        Row() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             AsyncImage(
                 model = character.image,
                 contentDescription = "${character.name}_image",
                 error = painterResource(R.drawable.error_image),
+                onError = { Log.i("Error image", it.toString()) },
                 modifier = Modifier
                     .size(130.dp)
                     .clip(RoundedCornerShape(10.dp))
             )
-            CharacterInfo(character = character)
+            CharacterInfo(
+                character = character,
+                modifier = Modifier.weight(4f)
+            )
+            IconToggleButton(
+                checked = character.favorite,
+                onCheckedChange = { toggleFavorite(character.id) },
+                colors = IconToggleButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.LightGray,
+                    disabledContainerColor = Color.LightGray,
+                    disabledContentColor = Color.DarkGray,
+                    checkedContainerColor = Color.Transparent,
+                    checkedContentColor = Color.Red
+                ),
+                modifier = Modifier.weight(1f),
+            ) {
+                Icon(
+                    modifier = Modifier.size(40.dp),
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = "Formality icon"
+                )
+            }
+
         }
     }
 }
 
 
 @Composable
-fun CharacterInfo(character: CharacterDomain) {
+fun CharacterInfo(
+    character: CharacterDomain, modifier:
+    Modifier = Modifier)
+{
     Column(
-        modifier = Modifier
-            .padding(12.dp)
-            .fillMaxWidth()
+        modifier = modifier.padding(12.dp)
     ) {
         Text(
             text = character.name,
@@ -144,8 +158,10 @@ fun CharacterInfo(character: CharacterDomain) {
 fun CharactersSuccessStatePreview() {
     val sampleCharacters = getSampleCharacters()
     CharactersSuccessState(
+        characters = sampleCharacters,
+        navigateToCharacterDetail = { },
         modifier = Modifier.fillMaxSize(),
-        characters = sampleCharacters
+        toggleFavorite = {},
     )
 }
 
