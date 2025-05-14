@@ -1,4 +1,4 @@
-package com.example.multiverse_explorer.characters.ui.states
+package com.example.multiverse_explorer.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun CharactersLoadingState(
+fun LoadingState(
     modifier: Modifier
 ){
     Column(
