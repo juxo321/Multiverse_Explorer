@@ -5,10 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="preview">
+      <SelectionState runConfigName="filterOptionsAreDisplayedWhenClickFilterButton()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="CharactersSuccessStatePreview">
+      <SelectionState runConfigName="sortingButtonWorksWhenIsClicked()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="characterScreenShowsLoadingState()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="characterScreenShowsSuccessState()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="characterScreenShowsErrorState()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

@@ -1,4 +1,4 @@
-package com.example.multiverse_explorer.characters.ui.states
+package com.example.multiverse_explorer.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,11 +7,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun CharactersLoadingState(
+fun LoadingState(
     modifier: Modifier
 ){
     Column(
@@ -19,6 +20,6 @@ fun CharactersLoadingState(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        CircularProgressIndicator(modifier = Modifier.size(100.dp))
+        CircularProgressIndicator(modifier = Modifier.size(100.dp).testTag("loading_indicator"))
     }
 }
