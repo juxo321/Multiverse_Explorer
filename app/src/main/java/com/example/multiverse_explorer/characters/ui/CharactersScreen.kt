@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -94,8 +95,10 @@ fun TitleApp() {
     ) {
         Image(
             painter = painterResource(R.drawable.icon_app),
-            contentDescription = "app_icon",
-            modifier = Modifier.size(40.dp),
+            contentDescription = "icon_app",
+            modifier = Modifier
+                .size(40.dp)
+                .testTag("icon_app")
         )
         Text(
             text = stringResource(R.string.title_app),
@@ -105,6 +108,7 @@ fun TitleApp() {
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .padding(vertical = 16.dp, horizontal = 4.dp)
+                .testTag("title_app")
         )
     }
 }
@@ -131,7 +135,7 @@ fun FilterButtons(
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.weight(3f)
+            modifier = Modifier.weight(3f).testTag("filter_options")
         ) {
             TextField(
                 readOnly = true,
@@ -153,7 +157,8 @@ fun FilterButtons(
                         onClick = {
                             onStatusSelected(it)
                             expanded = false
-                        }
+                        },
+                        modifier = Modifier.testTag("${it}_option")
                     )
                 }
             }
@@ -167,6 +172,7 @@ fun FilterButtons(
             modifier = Modifier
                 .padding(start = 8.dp)
                 .weight(1f)
+                .testTag("sort_button")
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
