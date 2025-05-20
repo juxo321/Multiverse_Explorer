@@ -19,7 +19,6 @@ coroutines-version = "1.9.0"
 ksp-version = "2.1.0-1.0.29"
 hilt-version = "2.52"
 hilt-compose-version = "1.2.0"
-robolectric-version = "4.14.1"
 mockk-version = "1.13.13"
 cororutines-test-version = "1.9.0"
 core-testing-version = "2.2.0"
@@ -82,8 +81,7 @@ core-test = { group = "androidx.arch.core", name = "core-testing", version.ref =
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version"}
 
 #compose-testing
-
-compose-test = { group = "androidx.compose.ui ", name = "ui-test", version.ref = "compose-test-version"}
+compose-test = { group = "androidx.compose.ui", name = "ui-test", version.ref = "compose-test-version"}
 
 
 

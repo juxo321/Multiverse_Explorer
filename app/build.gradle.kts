@@ -108,7 +108,7 @@ dependencies {
 
     //compose-test
     testImplementation(libs.compose.test)
-
+    testImplementation(kotlin("test"))
     testImplementation(libs.turbine)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -117,5 +117,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(kotlin("test"))
 }

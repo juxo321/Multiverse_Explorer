@@ -3,9 +3,9 @@ package com.example.multiverse_explorer.characters.ui
 
 import app.cash.turbine.test
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
-import com.example.multiverse_explorer.characters.domain.state.CharactersUiState
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersUseCase
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.domain.status.UiState
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -74,7 +74,7 @@ class CharactersViewModelTest {
 
         //Then
         assertEquals("All", charactersViewModel.selectedStatus.value)
-        assertEquals(CharactersUiState.Success, charactersViewModel.charactersUiState)
+        assertEquals(UiState.Success, charactersViewModel.charactersUiState)
         charactersViewModel.characters.test {
             assertEquals(characters, awaitItem())
             cancelAndIgnoreRemainingEvents()
@@ -114,7 +114,7 @@ class CharactersViewModelTest {
 
         //Then
         assertEquals("Alive", charactersViewModel.selectedStatus.value)
-        assertEquals(CharactersUiState.Success, charactersViewModel.charactersUiState)
+        assertEquals(UiState.Success, charactersViewModel.charactersUiState)
         charactersViewModel.characters.test {
             assertEquals(aliveCharacters, awaitItem())
             cancelAndIgnoreRemainingEvents()
@@ -137,8 +137,8 @@ class CharactersViewModelTest {
 
         //Then
         assertEquals("All", charactersViewModel.selectedStatus.value)
-        assertTrue(charactersViewModel.charactersUiState is CharactersUiState.Error)
-        val error = charactersViewModel.charactersUiState as CharactersUiState.Error
+        assertTrue(charactersViewModel.charactersUiState is UiState.Error)
+        val error = charactersViewModel.charactersUiState as UiState.Error
         assertEquals(expectedResult.message, error.message)
     }
 

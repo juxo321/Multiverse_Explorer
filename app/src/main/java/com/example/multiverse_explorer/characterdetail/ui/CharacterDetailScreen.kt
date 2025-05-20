@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
-import com.example.multiverse_explorer.characterdetail.domain.state.CharacterDetailUiState
 import com.example.multiverse_explorer.characterdetail.ui.states.CharacterDetailSuccessState
+import com.example.multiverse_explorer.core.domain.status.UiState
 import com.example.multiverse_explorer.core.ui.components.ErrorState
 import com.example.multiverse_explorer.core.ui.components.LoadingState
 
@@ -29,16 +29,15 @@ fun CharacterDetailScreen(
         null
     )
     val episodes: List<EpisodeDomain> by characterDetailViewModel.episodes.collectAsState()
-    val characterDetailUiState: CharacterDetailUiState =
-        characterDetailViewModel.characterDetailUiState
+    val characterDetailUiState: UiState = characterDetailViewModel.characterDetailUiState
 
 
     when (characterDetailUiState) {
-        CharacterDetailUiState.Loading -> {
+        UiState.Loading -> {
             LoadingState(modifier = modifier)
         }
 
-        CharacterDetailUiState.Success -> {
+        UiState.Success -> {
             characterDetail?.let {
                 CharacterDetailSuccessState(
                     characterDetail = it,
@@ -48,7 +47,7 @@ fun CharacterDetailScreen(
             }
         }
 
-        is CharacterDetailUiState.Error -> {
+        is UiState.Error -> {
             ErrorState(modifier = modifier)
         }
     }
