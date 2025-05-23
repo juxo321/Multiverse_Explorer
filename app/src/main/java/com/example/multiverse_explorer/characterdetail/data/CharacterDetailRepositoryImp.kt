@@ -20,14 +20,12 @@ class CharacterDetailRepositoryImp @Inject constructor(
 
     override suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailDomain?> =
         NetworkFunctions.safeServiceCall(
-            serviceCall = {characterDetailService.getCharacterDetail(characterId = characterId)},
-            transform = { it?.toDomain() }
-        )
+            serviceCall = { characterDetailService.getCharacterDetail(characterId = characterId) },
+            transform = { it?.toDomain() })
 
-    override suspend fun getEpisodes(episodeIds: List<Int>) : ResultApi<List<EpisodeDomain>?> =
+    override suspend fun getEpisodes(episodeIds: List<Int>): ResultApi<List<EpisodeDomain>?> =
         NetworkFunctions.safeServiceCall(
-            serviceCall = { episodeService.getEpisodes(episodeIds = episodeIds)},
-            transform = { it.map { episode -> episode.toDomain()}}
-        )
+            serviceCall = { episodeService.getEpisodes(episodeIds = episodeIds) },
+            transform = { it.map { episode -> episode.toDomain() } })
 
 }
