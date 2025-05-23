@@ -5,5 +5,5 @@ import com.example.multiverse_explorer.core.ResultApi
 
 interface CharactersRepository {
 
-    suspend fun getCharacters(): ResultApi<List<CharacterDomain>>
+    suspend fun getCharacters(selectedStatus: String): ResultApi<List<CharacterDomain>>
 }

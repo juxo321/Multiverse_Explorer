@@ -9,8 +9,8 @@ import javax.inject.Inject
 
 class CharactersRepositoryImp @Inject constructor( private val charactersService: CharactersService) : CharactersRepository {
 
-    override suspend fun getCharacters(): ResultApi<List<CharacterDomain>> {
-        val result = charactersService.getCharacters()
+    override suspend fun getCharacters(selectedStatus:String): ResultApi<List<CharacterDomain>> {
+        val result = charactersService.getCharacters(selectedStatus = selectedStatus)
         return when (result) {
             is ResultApi.Success -> ResultApi.Success(result.data.map { it.toDomain() })
             is ResultApi.Error -> ResultApi.Error(result.message)
