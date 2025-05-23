@@ -11,12 +11,14 @@ class CharactersService @Inject constructor(private val charactersApi: Character
     suspend fun getCharacters(selectedStatus: String): ResultApi<List<CharacterData>> {
         return runCatching {
             val resultApi = charactersApi.getCharacters(selectedStatus = selectedStatus)
-            Log.i("RESULTTTT", resultApi.toString())
-            resultApi.body()?.characters ?: emptyList()
+            if(resultApi.isSuccessful){
+                resultApi.body()?.characters ?: emptyList()
+            }else {
+                throw Exception(resultApi.message())
+            }
         }.fold(
             onSuccess = { ResultApi.Success(it) },
             onFailure = {
-                Log.i("AAAA", it.stackTraceToString() ?: "")
                 ResultApi.Error("Exception: ${it.message}")
             }
         )

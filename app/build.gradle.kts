@@ -44,6 +44,19 @@ android {
             isIncludeAndroidResources = true
         }
     }
+    packaging {
+        resources {
+            excludes += listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/versions/9/OSGI-INF/MANIFEST.MF",
+                "/META-INF/LICENSE.md"
+            )
+            merges += listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md"
+            )
+        }
+    }
 
 }
 
@@ -82,11 +95,10 @@ dependencies {
     implementation(libs.hilt.compose)
     ksp(libs.hilt.compiler)
 
-    //robolectric
-    implementation(libs.robolectric)
-
     //Mockk
     implementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
 
     //coroutines-test
     testImplementation(libs.coroutines.test)
@@ -94,8 +106,10 @@ dependencies {
     //core-test
     testImplementation(libs.core.test)
 
-    testImplementation(kotlin("test"))
+    //compose-test
+    testImplementation(libs.compose.test)
 
+    testImplementation(libs.turbine)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

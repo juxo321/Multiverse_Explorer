@@ -23,6 +23,8 @@ robolectric-version = "4.14.1"
 mockk-version = "1.13.13"
 cororutines-test-version = "1.9.0"
 core-testing-version = "2.2.0"
+turbine-version = "1.2.0"
+compose-test-version = "1.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,17 +66,24 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
 hilt-compose = {group ="androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-compose-version"}
 
-#robolectric
-robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric-version"}
 
 #mock
 mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk-version"}
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk-version" }
+mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk-version" }
 
 #coroutines-test
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "cororutines-test-version"}
 
 #core-test
 core-test = { group = "androidx.arch.core", name = "core-testing", version.ref = "core-testing-version"}
+
+#turbine
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version"}
+
+#compose-testing
+
+compose-test = { group = "androidx.compose.ui ", name = "ui-test", version.ref = "compose-test-version"}
 
 
 
