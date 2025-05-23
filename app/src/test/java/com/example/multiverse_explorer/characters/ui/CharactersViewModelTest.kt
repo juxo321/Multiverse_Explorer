@@ -74,11 +74,11 @@ class CharactersViewModelTest {
 
         //Then
         assertEquals("All", charactersViewModel.selectedStatus.value)
-        assertEquals(UiState.Success, charactersViewModel.charactersUiState)
         charactersViewModel.characters.test {
             assertEquals(characters, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
+        assertEquals(UiState.Success, charactersViewModel.charactersUiState)
     }
 
     @Test
@@ -137,9 +137,10 @@ class CharactersViewModelTest {
 
         //Then
         assertEquals("All", charactersViewModel.selectedStatus.value)
-        assertTrue(charactersViewModel.charactersUiState is UiState.Error)
+        coVerify(exactly = 1) { getCharactersUseCase(any()) }
         val error = charactersViewModel.charactersUiState as UiState.Error
         assertEquals(expectedResult.message, error.message)
+        assertTrue(charactersViewModel.charactersUiState is UiState.Error)
     }
 
     @Test

@@ -10,14 +10,17 @@ import androidx.compose.ui.test.performClick
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class CharactersSuccessStateKtTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
 
     @Test
-    fun showAllCharacters() {
+    fun `When show all the characters successfully`() {
 
         val characters = listOf(
             CharacterDomain(
@@ -60,7 +63,7 @@ class CharactersSuccessStateKtTest {
 
 
     @Test
-    fun characterItemShowsCorrectInformation(){
+    fun `When character item shows all the information`(){
 
 
         val character = CharacterDomain(
@@ -87,7 +90,7 @@ class CharactersSuccessStateKtTest {
 
 
     @Test
-    fun characterItemClick(){
+    fun `When the user clicks the character item`(){
         var navigationId = 0
         val character = CharacterDomain(
             id = 1,
@@ -111,7 +114,7 @@ class CharactersSuccessStateKtTest {
     }
 
     @Test
-    fun characterItemTogglesFavorite(){
+    fun `When the user clicks the character Item Toggle Favorite`(){
         var favorite = false
 
         val character = CharacterDomain(

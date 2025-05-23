@@ -11,7 +11,12 @@ class CharacterDetailService @Inject constructor(private val characterDetailApi:
     suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailData?> =
         NetworkFunctions.safeApiCall {
             val result = characterDetailApi.getCharacterDetail(characterId)
-            result.body()
+            if (result.isSuccessful) {
+                result.body()
+            } else {
+                throw Exception(result.message())
+            }
+
         }
 
 }

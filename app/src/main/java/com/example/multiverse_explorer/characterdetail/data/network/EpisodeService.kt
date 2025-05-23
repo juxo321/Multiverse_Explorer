@@ -11,6 +11,10 @@ class EpisodeService @Inject constructor(private val episodeApi: EpisodeApi) {
     suspend fun getEpisodes(episodeIds: List<Int>): ResultApi<List<EpisodeData>> =
         NetworkFunctions.safeApiCall {
             val result = episodeApi.getEpisodes(episodeIds)
-            result.body() ?: emptyList()
+            if (result.isSuccessful) {
+                result.body() ?: emptyList()
+            } else {
+                throw Exception(result.message())
+            }
         }
 }

@@ -108,8 +108,16 @@ dependencies {
 
     //compose-test
     testImplementation(libs.compose.test)
-    testImplementation(kotlin("test"))
+
+    //turbine
     testImplementation(libs.turbine)
+
+    //robolectric
+    testImplementation(libs.robolectric)
+    implementation(libs.androidx.ui.test.junit4.android)
+
+
+    testImplementation(kotlin("test"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
