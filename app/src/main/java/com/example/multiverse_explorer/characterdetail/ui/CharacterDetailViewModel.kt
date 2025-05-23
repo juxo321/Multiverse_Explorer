@@ -6,13 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
-import com.example.multiverse_explorer.characterdetail.domain.state.CharacterDetailUiState
 import com.example.multiverse_explorer.characterdetail.domain.usecases.GetCharacterDetailUseCase
 import com.example.multiverse_explorer.characterdetail.domain.usecases.GetEpisodesByIdsUseCase
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.domain.status.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +32,7 @@ class CharacterDetailViewModel @Inject constructor(
     private val _episodes: MutableStateFlow<List<EpisodeDomain>> = MutableStateFlow(emptyList())
     val episodes: StateFlow<List<EpisodeDomain>> = _episodes
 
-    var characterDetailUiState: CharacterDetailUiState by mutableStateOf(CharacterDetailUiState.Loading)
+    var characterDetailUiState: UiState by mutableStateOf(UiState.Loading)
         private set
 
     fun getCharacterDetail(characterId: Int) {
@@ -42,14 +41,14 @@ class CharacterDetailViewModel @Inject constructor(
             when(result){
                 is ResultApi.Success -> {
                     if (result.data == null) {
-                        characterDetailUiState = CharacterDetailUiState.Error("Character not found!")
+                        characterDetailUiState = UiState.Error("Character not found!")
                     } else {
                         _characterDetail.value = result.data
                         getEpisodes(result.data.episodes)
                     }
                 }
                 is ResultApi.Error -> {
-                    characterDetailUiState = CharacterDetailUiState.Error(result.message)
+                    characterDetailUiState = UiState.Error(result.message)
                 }
 
             }
@@ -62,14 +61,14 @@ class CharacterDetailViewModel @Inject constructor(
             when(result){
                 is ResultApi.Success -> {
                     if (result.data?.isEmpty() == true) {
-                        characterDetailUiState = CharacterDetailUiState.Error("Episodes not found!")
+                        characterDetailUiState = UiState.Error("Episodes not found!")
                     } else {
                         _episodes.value = result.data ?: emptyList()
-                        characterDetailUiState = CharacterDetailUiState.Success
+                        characterDetailUiState = UiState.Success
                     }
                 }
                 is ResultApi.Error -> {
-                    characterDetailUiState = CharacterDetailUiState.Error(result.message)
+                    characterDetailUiState = UiState.Error(result.message)
                 }
 
             }

@@ -26,7 +26,7 @@ fun ErrorState(
         modifier = modifier.testTag("error_state")
     ) {
         Text(
-            text = stringResource(R.string.generic_error),
+            text = stringResource(R.string.error_generic),
             fontWeight = FontWeight.Bold,
             color = Color.LightGray,
             modifier = Modifier.size(200.dp)

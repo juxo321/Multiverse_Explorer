@@ -7,9 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
-import com.example.multiverse_explorer.characters.domain.state.CharactersUiState
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersUseCase
+import com.example.multiverse_explorer.core.Constants.Filter.ALL
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.domain.status.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +28,10 @@ class CharactersViewModel @Inject constructor(
     private val _characters: MutableStateFlow<List<CharacterDomain>> = MutableStateFlow(emptyList())
     val characters: StateFlow<List<CharacterDomain>> = _characters
 
-    var selectedStatus = mutableStateOf("All")
+    var selectedStatus = mutableStateOf(ALL)
         private set
 
-    var charactersUiState: CharactersUiState by mutableStateOf(CharactersUiState.Loading)
+    var charactersUiState: UiState by mutableStateOf(UiState.Loading)
         private set
 
     private val favoriteCharacters: MutableList<Int> = mutableListOf()
@@ -42,8 +43,8 @@ class CharactersViewModel @Inject constructor(
 
     fun onStatusSelected(status: String) {
         selectedStatus.value = status
-        charactersUiState = CharactersUiState.Loading
-        getCharacters((if (status == "All") "" else status))
+        charactersUiState = UiState.Loading
+        getCharacters((if (status == ALL) "" else status))
     }
 
 
@@ -53,16 +54,16 @@ class CharactersViewModel @Inject constructor(
             when (result) {
                 is ResultApi.Success -> {
                     if (result.data.isEmpty()) {
-                        charactersUiState = CharactersUiState.Error("There are no results!")
+                        charactersUiState = UiState.Error("There are no results!")
                     } else {
                         _characters.value = result.data.map { character ->
                             character.copy(favorite = favoriteCharacters.contains(character.id))
                         }
-                        charactersUiState = CharactersUiState.Success
+                        charactersUiState = UiState.Success
                     }
                 }
 
-                is ResultApi.Error -> charactersUiState = CharactersUiState.Error(result.message)
+                is ResultApi.Error -> charactersUiState = UiState.Error(result.message)
 
             }
         }

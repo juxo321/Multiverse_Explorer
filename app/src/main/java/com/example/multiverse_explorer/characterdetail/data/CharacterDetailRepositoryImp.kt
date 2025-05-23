@@ -10,6 +10,7 @@ import com.example.multiverse_explorer.characterdetail.domain.repository.Charact
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.utils.NetworkFunctions
 import javax.inject.Inject
 
 class CharacterDetailRepositoryImp @Inject constructor(
@@ -17,20 +18,16 @@ class CharacterDetailRepositoryImp @Inject constructor(
     private val episodeService: EpisodeService
 ) : CharacterDetailRepository {
 
-    override suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailDomain?> {
-        val result = characterDetailService.getCharacterDetail(characterId = characterId)
-        return when(result){
-            is ResultApi.Success -> ResultApi.Success(result.data?.toDomain())
-            is ResultApi.Error -> ResultApi.Error(result.message)
-        }
-    }
+    override suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailDomain?> =
+        NetworkFunctions.safeServiceCall(
+            serviceCall = {characterDetailService.getCharacterDetail(characterId = characterId)},
+            transform = { it?.toDomain() }
+        )
 
-    override suspend fun getEpisodes(episodeIds: List<Int>) : ResultApi<List<EpisodeDomain>?>{
-        val result = episodeService.getEpisodes(episodeIds = episodeIds)
-        return when(result){
-            is ResultApi.Success -> ResultApi.Success(result.data.map { it.toDomain() })
-            is ResultApi.Error -> ResultApi.Error(result.message)
-        }
-    }
+    override suspend fun getEpisodes(episodeIds: List<Int>) : ResultApi<List<EpisodeDomain>?> =
+        NetworkFunctions.safeServiceCall(
+            serviceCall = { episodeService.getEpisodes(episodeIds = episodeIds)},
+            transform = { it.map { episode -> episode.toDomain()}}
+        )
 
 }

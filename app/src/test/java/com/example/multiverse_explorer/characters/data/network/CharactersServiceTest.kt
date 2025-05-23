@@ -120,7 +120,7 @@ class CharactersServiceTest {
 
         //Then
         assertTrue(result is ResultApi.Error)
-        assertEquals(result.message, "Not found")
+        assertEquals("Exception: ${errorResponse.message()}", result.message)
         coVerify(exactly = 1) { charactersApi.getCharacters(selectedStatus = "") }
     }
 }

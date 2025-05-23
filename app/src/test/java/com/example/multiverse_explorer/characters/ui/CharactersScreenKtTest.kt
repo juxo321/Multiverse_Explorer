@@ -9,13 +9,17 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
-import com.example.multiverse_explorer.characters.domain.state.CharactersUiState
+import com.example.multiverse_explorer.core.domain.status.UiState
+import com.example.multiverse_explorer.ui.theme.Multiverse_ExplorerTheme
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class CharactersScreenKtTest {
 
 
@@ -89,7 +93,7 @@ class CharactersScreenKtTest {
 
     @Test
     fun characterScreenShowsLoadingState() {
-        every { mockViewModel.charactersUiState } returns CharactersUiState.Loading
+        every { mockViewModel.charactersUiState } returns UiState.Loading
         every { mockViewModel.characters } returns MutableStateFlow(emptyList())
         every { mockViewModel.selectedStatus } returns mutableStateOf("All")
 
@@ -106,16 +110,18 @@ class CharactersScreenKtTest {
 
     @Test
     fun characterScreenShowsErrorState() {
-        every { mockViewModel.charactersUiState } returns CharactersUiState.Error("Error message")
+        every { mockViewModel.charactersUiState } returns UiState.Error("Error message")
         every { mockViewModel.characters } returns MutableStateFlow(emptyList())
         every { mockViewModel.selectedStatus } returns mutableStateOf("All")
 
         composeTestRule.setContent {
-            CharactersScreen(
-                charactersViewModel = mockViewModel,
-                navigateToCharacterDetail = {},
-                modifier = Modifier.fillMaxSize()
-            )
+            Multiverse_ExplorerTheme {
+                CharactersScreen(
+                    charactersViewModel = mockViewModel,
+                    navigateToCharacterDetail = {},
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
 
         composeTestRule.onNodeWithTag("error_state").assertIsDisplayed()
@@ -147,7 +153,7 @@ class CharactersScreenKtTest {
             )
         )
 
-        every { mockViewModel.charactersUiState } returns CharactersUiState.Success
+        every { mockViewModel.charactersUiState } returns UiState.Success
         every { mockViewModel.characters } returns MutableStateFlow(testCharacters)
         every { mockViewModel.selectedStatus } returns mutableStateOf("All")
 
