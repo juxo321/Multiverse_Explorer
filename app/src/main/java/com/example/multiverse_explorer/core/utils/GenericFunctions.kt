@@ -4,13 +4,12 @@ import com.example.multiverse_explorer.core.ResultApi
 
 object NetworkFunctions {
 
-    suspend fun <T, R> safeServiceCall(
+    suspend fun <T> safeServiceCall(
         serviceCall: suspend () -> ResultApi<T>,
-        transform: (T) -> R
-    ): ResultApi<R> {
+    ): ResultApi<T> {
         val result = serviceCall()
         return when (result) {
-            is ResultApi.Success -> ResultApi.Success(transform(result.data))
+            is ResultApi.Success -> ResultApi.Success(result.data)
             is ResultApi.Error -> ResultApi.Error(result.message)
         }
     }

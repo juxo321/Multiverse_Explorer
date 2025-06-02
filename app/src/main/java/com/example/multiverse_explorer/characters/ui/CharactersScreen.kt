@@ -54,7 +54,7 @@ fun CharactersScreen(
 
     val charactersUiState = charactersViewModel.charactersUiState
     val characters by charactersViewModel.characters.collectAsState(emptyList())
-    val selectedStatus by charactersViewModel.selectedStatus
+    val selectedStatus by charactersViewModel.selectedStatus.collectAsState()
 
     Column(modifier = modifier) {
         TitleApp()

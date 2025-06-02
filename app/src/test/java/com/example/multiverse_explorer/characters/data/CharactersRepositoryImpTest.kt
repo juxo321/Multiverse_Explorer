@@ -1,8 +1,8 @@
 package com.example.multiverse_explorer.characters.data
 
-import com.example.multiverse_explorer.characters.data.model.CharacterData
-import com.example.multiverse_explorer.characters.data.model.LocationData
-import com.example.multiverse_explorer.characters.data.model.OriginData
+import com.example.multiverse_explorer.characters.data.network.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.model.LocationData
+import com.example.multiverse_explorer.characters.data.network.model.OriginData
 import com.example.multiverse_explorer.characters.data.network.CharactersService
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository

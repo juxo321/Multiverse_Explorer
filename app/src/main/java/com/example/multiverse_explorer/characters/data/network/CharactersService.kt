@@ -1,7 +1,7 @@
 package com.example.multiverse_explorer.characters.data.network
 
 import android.util.Log
-import com.example.multiverse_explorer.characters.data.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.model.CharacterData
 import com.example.multiverse_explorer.core.ResultApi
 import com.example.multiverse_explorer.core.utils.NetworkFunctions
 import javax.annotation.meta.When

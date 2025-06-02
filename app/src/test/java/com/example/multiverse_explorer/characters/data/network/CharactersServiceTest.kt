@@ -1,10 +1,10 @@
 package com.example.multiverse_explorer.characters.data.network
 
-import com.example.multiverse_explorer.characters.data.model.ApiData
-import com.example.multiverse_explorer.characters.data.model.CharacterData
-import com.example.multiverse_explorer.characters.data.model.InformationData
-import com.example.multiverse_explorer.characters.data.model.LocationData
-import com.example.multiverse_explorer.characters.data.model.OriginData
+import com.example.multiverse_explorer.characters.data.network.model.ApiData
+import com.example.multiverse_explorer.characters.data.network.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.model.InformationData
+import com.example.multiverse_explorer.characters.data.network.model.LocationData
+import com.example.multiverse_explorer.characters.data.network.model.OriginData
 import com.example.multiverse_explorer.core.ResultApi
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

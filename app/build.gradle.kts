@@ -95,6 +95,11 @@ dependencies {
     implementation(libs.hilt.compose)
     ksp(libs.hilt.compiler)
 
+
+    //room
+    implementation(libs.room)
+    ksp(libs.room.compiler)
+
     //Mockk
     implementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)

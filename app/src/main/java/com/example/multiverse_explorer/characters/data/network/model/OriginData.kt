@@ -1,10 +1,10 @@
-package com.example.multiverse_explorer.characters.data.model
+package com.example.multiverse_explorer.characters.data.network.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class LocationData (
+data class OriginData (
     @Json(name = "name") val name: String,
     @Json(name = "url") val url: String
 )

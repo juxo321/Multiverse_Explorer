@@ -18,14 +18,21 @@ class CharacterDetailRepositoryImp @Inject constructor(
     private val episodeService: EpisodeService
 ) : CharacterDetailRepository {
 
-    override suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailDomain?> =
-        NetworkFunctions.safeServiceCall(
-            serviceCall = { characterDetailService.getCharacterDetail(characterId = characterId) },
-            transform = { it?.toDomain() })
+    //    override suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailDomain?> =
+//        NetworkFunctions.safeServiceCall(
+//            serviceCall = { characterDetailService.getCharacterDetail(characterId = characterId) },
+//            transform = { it?.toDomain() })
+//
+//    override suspend fun getEpisodes(episodeIds: List<Int>): ResultApi<List<EpisodeDomain>?> =
+//        NetworkFunctions.safeServiceCall(
+//            serviceCall = { episodeService.getEpisodes(episodeIds = episodeIds) },
+//            transform = { it.map { episode -> episode.toDomain() } })
+    override suspend fun getCharacterDetail(characterId: Int): ResultApi<CharacterDetailDomain?> {
+        TODO("Not yet implemented")
+    }
 
-    override suspend fun getEpisodes(episodeIds: List<Int>): ResultApi<List<EpisodeDomain>?> =
-        NetworkFunctions.safeServiceCall(
-            serviceCall = { episodeService.getEpisodes(episodeIds = episodeIds) },
-            transform = { it.map { episode -> episode.toDomain() } })
+    override suspend fun getEpisodes(episodeIds: List<Int>): ResultApi<List<EpisodeDomain>?> {
+        TODO("Not yet implemented")
+    }
 
 }
