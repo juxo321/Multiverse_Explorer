@@ -55,16 +55,18 @@ fun CharactersScreen(
     val charactersUiState = charactersViewModel.charactersUiState
     val characters by charactersViewModel.characters.collectAsState(emptyList())
     val selectedStatus by charactersViewModel.selectedStatus.collectAsState()
+    val isNameSorted by charactersViewModel.isNameSorted
 
     Column(modifier = modifier) {
         TitleApp()
         FilterButtons(
             selectedStatus = selectedStatus,
+            isNameSorted = isNameSorted,
             onStatusSelected = {
                 charactersViewModel.onStatusSelected(it)
             },
             onSortToggled = {
-                charactersViewModel.onSortByNameToggled(it)
+                charactersViewModel.onSortByNameToggled()
             }
         )
         Box {
@@ -118,13 +120,13 @@ fun TitleApp() {
 @Composable
 fun FilterButtons(
     selectedStatus: String,
+    isNameSorted: Boolean,
     onStatusSelected: (status: String) -> Unit,
-    onSortToggled: (Boolean) -> Unit
+    onSortToggled: () -> Unit
 ) {
 
     val statusOptions = Constants.Filter.STATUS_OPTIONS
     var expanded by remember { mutableStateOf(false) }
-    var isNameSorted by remember { mutableStateOf(false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -168,8 +170,7 @@ fun FilterButtons(
         }
         FilledIconButton(
             onClick = {
-                isNameSorted = !isNameSorted
-                onSortToggled(isNameSorted)
+                onSortToggled()
             },
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier

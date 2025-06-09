@@ -15,8 +15,8 @@ import com.example.multiverse_explorer.core.utils.NetworkFunctions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CharactersRepositoryImp @Inject constructor(
@@ -48,6 +48,9 @@ class CharactersRepositoryImp @Inject constructor(
 
 
     override suspend fun saveCharactersToDatabase(charactersData: List<CharacterData>) {
+
+        val favoriteCharacters = characterDao.getFavoriteCharacters()
+
         val origins = charactersData.map { characterData ->
             OriginEntity(
                 name = characterData.origin.name,
@@ -69,9 +72,17 @@ class CharactersRepositoryImp @Inject constructor(
             characterData.toEntity(
                 originId = originIds[index].toInt(),
                 locationId = locationIds[index].toInt()
-            )
+            ).copy(isFavorite = favoriteCharacters.any { it.character.id == characterData.id })
         }
 
         characterDao.insertCharacters(characters)
     }
+
+
+    override suspend fun updateFavoriteCharacter(characterId: Int, isFavorite: Boolean) =
+        withContext(Dispatchers.IO) {
+            characterDao.updateFavoriteCharacter(characterId = characterId, isFavorite = isFavorite)
+        }
+
+
 }

@@ -5,7 +5,7 @@ import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 
 fun CharacterWithRelations.toDomain(): CharacterDomain {
     return CharacterDomain(
-        id = character.originId,
+        id = character.id,
         name = character.name,
         status = character.status,
         species = character.species,

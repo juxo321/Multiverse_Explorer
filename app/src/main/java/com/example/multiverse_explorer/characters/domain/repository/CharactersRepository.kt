@@ -10,4 +10,5 @@ interface CharactersRepository {
     suspend fun getCharactersFromNetwork(selectedStatus:String)
     suspend fun getCharactersFromDatabase(selectedStatus: String):Flow<ResultApi<List<CharacterDomain>>>
     suspend fun saveCharactersToDatabase(charactersData: List<CharacterData>)
+    suspend fun updateFavoriteCharacter(characterId: Int, isFavorite: Boolean): Int
 }

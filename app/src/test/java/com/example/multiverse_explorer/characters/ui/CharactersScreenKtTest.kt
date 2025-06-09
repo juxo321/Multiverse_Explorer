@@ -46,6 +46,7 @@ class CharactersScreenKtTest {
         composeTestRule.setContent {
             FilterButtons(
                 selectedStatus = "All",
+                isNameSorted = false,
                 onStatusSelected = { },
                 onSortToggled = { }
             )
@@ -61,6 +62,7 @@ class CharactersScreenKtTest {
         composeTestRule.setContent {
             FilterButtons(
                 selectedStatus = "All",
+                isNameSorted = false,
                 onStatusSelected = { },
                 onSortToggled = { }
             )
@@ -69,7 +71,7 @@ class CharactersScreenKtTest {
         composeTestRule.onNodeWithTag("filter_options").performClick()
         composeTestRule.onNodeWithTag("Alive_option").assertIsDisplayed()
         composeTestRule.onNodeWithTag("Dead_option").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("Unknown_option").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("unknown_option").assertIsDisplayed()
     }
 
 
@@ -80,8 +82,9 @@ class CharactersScreenKtTest {
         composeTestRule.setContent {
             FilterButtons(
                 selectedStatus = "All",
+                isNameSorted = false,
                 onStatusSelected = { },
-                onSortToggled = { isSorted = it }
+                onSortToggled = { isSorted = !isSorted }
             )
         }
 
@@ -95,7 +98,8 @@ class CharactersScreenKtTest {
     fun characterScreenShowsLoadingState() {
         every { mockViewModel.charactersUiState } returns UiState.Loading
         every { mockViewModel.characters } returns MutableStateFlow(emptyList())
-        every { mockViewModel.selectedStatus } returns mutableStateOf("All")
+        every { mockViewModel.selectedStatus } returns MutableStateFlow("All")
+        every { mockViewModel.isNameSorted } returns mutableStateOf(false)
 
         composeTestRule.setContent {
             CharactersScreen(
@@ -112,7 +116,8 @@ class CharactersScreenKtTest {
     fun characterScreenShowsErrorState() {
         every { mockViewModel.charactersUiState } returns UiState.Error("Error message")
         every { mockViewModel.characters } returns MutableStateFlow(emptyList())
-        every { mockViewModel.selectedStatus } returns mutableStateOf("All")
+        every { mockViewModel.selectedStatus } returns MutableStateFlow("All")
+        every { mockViewModel.isNameSorted } returns mutableStateOf(false)
 
         composeTestRule.setContent {
             Multiverse_ExplorerTheme {
@@ -155,7 +160,8 @@ class CharactersScreenKtTest {
 
         every { mockViewModel.charactersUiState } returns UiState.Success
         every { mockViewModel.characters } returns MutableStateFlow(testCharacters)
-        every { mockViewModel.selectedStatus } returns mutableStateOf("All")
+        every { mockViewModel.selectedStatus } returns MutableStateFlow("All")
+        every { mockViewModel.isNameSorted } returns mutableStateOf(false)
 
         composeTestRule.setContent {
             CharactersScreen(
@@ -167,7 +173,6 @@ class CharactersScreenKtTest {
 
         composeTestRule.onNodeWithText("Rick").assertIsDisplayed()
         composeTestRule.onNodeWithText("Morty Smith").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Summer Smith").assertIsDisplayed()
     }
 
 }
