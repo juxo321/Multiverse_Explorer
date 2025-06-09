@@ -8,13 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.multiverse_explorer.characters.ui.CharactersScreen
 import com.example.multiverse_explorer.core.navigation.NavigationWrapper
 import com.example.multiverse_explorer.core.ui.components.DynamicTopAppBar
 import com.example.multiverse_explorer.ui.theme.Multiverse_ExplorerTheme

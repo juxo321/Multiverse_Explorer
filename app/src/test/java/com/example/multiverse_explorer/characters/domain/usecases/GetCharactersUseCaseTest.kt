@@ -1,5 +1,6 @@
 package com.example.multiverse_explorer.characters.domain.usecases
 
+import app.cash.turbine.test
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository
 import com.example.multiverse_explorer.core.ResultApi
@@ -7,6 +8,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -49,16 +51,20 @@ class GetCharactersUseCaseTest {
             ),
         )
         val expectedResult = ResultApi.Success(characters)
-        coEvery { charactersRepository.getCharacters(any()) } returns expectedResult
+        coEvery { charactersRepository.getCharactersFromDatabase(any()) } returns flow { emit(expectedResult) }
 
 
         //When
         val result = getCharactersUseCase(selectedStatus = "")
 
         //Then
-        assertTrue(result is ResultApi.Success)
-        assertEquals(characters, result.data)
-        coVerify(exactly = 1) { charactersRepository.getCharacters(selectedStatus = "") }
+        result.test {
+            val charactersDomain = awaitItem()
+            assertTrue(charactersDomain is ResultApi.Success)
+            assertEquals(characters, charactersDomain.data)
+            awaitComplete()
+        }
+        coVerify(exactly = 1) { charactersRepository.getCharactersFromDatabase(selectedStatus = "") }
 
     }
 
@@ -67,15 +73,19 @@ class GetCharactersUseCaseTest {
         //Given
         val expectedResult = ResultApi.Error("Network error")
 
-        coEvery { charactersRepository.getCharacters(any()) } returns expectedResult
+        coEvery { charactersRepository.getCharactersFromDatabase(any()) } returns flow { emit(expectedResult) }
 
         //When
         val result = getCharactersUseCase(selectedStatus = "")
 
         //Then
-        assertTrue(result is ResultApi.Error)
-        assertEquals(expectedResult.message, result.message)
-        coVerify( exactly = 1 ) { charactersRepository.getCharacters(selectedStatus = "") }
+        result.test {
+            val error = awaitItem()
+            assertTrue(error is ResultApi.Error)
+            assertEquals(expectedResult.message, error.message)
+            awaitComplete()
+        }
+        coVerify(exactly = 1) { charactersRepository.getCharactersFromDatabase(selectedStatus = "") }
     }
 
 

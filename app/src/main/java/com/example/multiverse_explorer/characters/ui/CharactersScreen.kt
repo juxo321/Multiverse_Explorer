@@ -38,8 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.multiverse_explorer.R
-import com.example.multiverse_explorer.characters.domain.state.CharactersUiState
 import com.example.multiverse_explorer.characters.ui.states.CharactersSuccessState
+import com.example.multiverse_explorer.core.Constants
+import com.example.multiverse_explorer.core.domain.status.UiState
 import com.example.multiverse_explorer.core.ui.components.ErrorState
 import com.example.multiverse_explorer.core.ui.components.LoadingState
 
@@ -53,23 +54,25 @@ fun CharactersScreen(
 
     val charactersUiState = charactersViewModel.charactersUiState
     val characters by charactersViewModel.characters.collectAsState(emptyList())
-    val selectedStatus by charactersViewModel.selectedStatus
+    val selectedStatus by charactersViewModel.selectedStatus.collectAsState()
+    val isNameSorted by charactersViewModel.isNameSorted
 
     Column(modifier = modifier) {
         TitleApp()
         FilterButtons(
             selectedStatus = selectedStatus,
+            isNameSorted = isNameSorted,
             onStatusSelected = {
                 charactersViewModel.onStatusSelected(it)
             },
             onSortToggled = {
-                charactersViewModel.onSortByNameToggled(it)
+                charactersViewModel.onSortByNameToggled()
             }
         )
         Box {
             when (charactersUiState) {
-                CharactersUiState.Loading -> LoadingState(modifier = modifier)
-                CharactersUiState.Success -> CharactersSuccessState(
+                UiState.Loading -> LoadingState(modifier = modifier)
+                UiState.Success -> CharactersSuccessState(
                     characters = characters,
                     navigateToCharacterDetail = navigateToCharacterDetail,
                     toggleFavorite = { characterId: Int ->
@@ -78,7 +81,7 @@ fun CharactersScreen(
                     modifier = modifier
                 )
 
-                is CharactersUiState.Error -> ErrorState(modifier = modifier)
+                is UiState.Error -> ErrorState(modifier = modifier)
             }
         }
     }
@@ -101,7 +104,7 @@ fun TitleApp() {
                 .testTag("icon_app")
         )
         Text(
-            text = stringResource(R.string.title_app),
+            text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineLarge,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.ExtraBold,
@@ -117,13 +120,13 @@ fun TitleApp() {
 @Composable
 fun FilterButtons(
     selectedStatus: String,
+    isNameSorted: Boolean,
     onStatusSelected: (status: String) -> Unit,
-    onSortToggled: (Boolean) -> Unit
+    onSortToggled: () -> Unit
 ) {
 
-    val statusOptions = listOf("All", "Alive", "Dead", "Unknown")
+    val statusOptions = Constants.Filter.STATUS_OPTIONS
     var expanded by remember { mutableStateOf(false) }
-    var isNameSorted by remember { mutableStateOf(false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -135,13 +138,15 @@ fun FilterButtons(
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.weight(3f).testTag("filter_options")
+            modifier = Modifier
+                .weight(3f)
+                .testTag("filter_options")
         ) {
             TextField(
                 readOnly = true,
                 value = selectedStatus,
                 onValueChange = {},
-                label = { Text("Select status") },
+                label = { Text(stringResource(R.string.characters_filter_status_label)) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
@@ -165,8 +170,7 @@ fun FilterButtons(
         }
         FilledIconButton(
             onClick = {
-                isNameSorted = !isNameSorted
-                onSortToggled(isNameSorted)
+                onSortToggled()
             },
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier
@@ -178,14 +182,14 @@ fun FilterButtons(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Name")
+                Text(text = stringResource(R.string.characters_sort_name_button))
                 Icon(
                     imageVector = if (isNameSorted) {
                         Icons.Default.KeyboardArrowUp
                     } else {
                         Icons.Default.KeyboardArrowDown
                     },
-                    contentDescription = "Sort by name"
+                    contentDescription = stringResource(R.string.characters_sort_name_description)
                 )
             }
         }

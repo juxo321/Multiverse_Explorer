@@ -29,6 +29,8 @@ import coil3.compose.AsyncImage
 import com.example.multiverse_explorer.R
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
+import com.example.multiverse_explorer.core.Constants.Filter.ALIVE
+import com.example.multiverse_explorer.core.Constants.Filter.DEAD
 
 
 @Composable
@@ -59,7 +61,6 @@ fun CharacterDetailSuccessState(
             )
         }
         EpisodesDetail(
-            characterDetail = characterDetail,
             episodes = episodes,
             modifier = modifier.weight(3f)
         )
@@ -122,8 +123,8 @@ fun CharacterDetailInfo(
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
             color = when (characterDetail.status) {
-                "Alive" -> MaterialTheme.colorScheme.primary
-                "Dead" -> MaterialTheme.colorScheme.error
+                ALIVE -> MaterialTheme.colorScheme.primary
+                DEAD -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             },
             modifier = Modifier.padding(bottom = 2.dp)
@@ -142,7 +143,6 @@ fun CharacterDetailInfo(
 
 @Composable
 fun EpisodesDetail(
-    characterDetail: CharacterDetailDomain,
     episodes: List<EpisodeDomain>,
     modifier: Modifier
 ) {

@@ -95,6 +95,11 @@ dependencies {
     implementation(libs.hilt.compose)
     ksp(libs.hilt.compiler)
 
+
+    //room
+    implementation(libs.room)
+    ksp(libs.room.compiler)
+
     //Mockk
     implementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
@@ -109,7 +114,15 @@ dependencies {
     //compose-test
     testImplementation(libs.compose.test)
 
+    //turbine
     testImplementation(libs.turbine)
+
+    //robolectric
+    testImplementation(libs.robolectric)
+    implementation(libs.androidx.ui.test.junit4.android)
+
+
+    testImplementation(kotlin("test"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -117,5 +130,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(kotlin("test"))
 }

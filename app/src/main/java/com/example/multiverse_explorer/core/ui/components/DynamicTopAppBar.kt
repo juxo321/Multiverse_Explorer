@@ -10,8 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.multiverse_explorer.R
 import com.example.multiverse_explorer.core.navigation.Routes
 
 
@@ -26,7 +28,7 @@ fun DynamicTopAppBar(
     val currentDestination = navBackStackEntry?.destination?.route
 
     val title : String= when (currentDestination) {
-        Routes.CharacterDetail.route -> "Character Detail" // TODO Change for string resource
+        Routes.CharacterDetail.route -> stringResource(R.string.dynamic_top_app_bar_character_title) // TODO Change for string resource
         else -> {""}
     }
 
@@ -37,7 +39,7 @@ fun DynamicTopAppBar(
                 IconButton(onClick = navigateBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back"
+                        contentDescription = stringResource(R.string.dynamic_top_app_bar_icon_description)
                     )
                 }
             }
