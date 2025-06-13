@@ -3,7 +3,7 @@ package com.example.multiverse_explorer.characters.data
 import app.cash.turbine.test
 import com.example.multiverse_explorer.characters.data.database.CharacterWithRelations
 import com.example.multiverse_explorer.characters.data.database.dao.CharacterDao
-import com.example.multiverse_explorer.characters.data.database.entities.CharacterEntity
+import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
 import com.example.multiverse_explorer.characters.data.database.entities.LocationEntity
 import com.example.multiverse_explorer.characters.data.database.entities.OriginEntity
 import com.example.multiverse_explorer.characters.data.mappers.toDomain
@@ -95,24 +95,7 @@ class CharactersRepositoryImpTest {
                     created = "2017-11-04T18:50:21.651Z"
                 )
             )
-//            val expectedCharactersDomain = listOf(
-//                CharacterDomain(
-//                    id = 1,
-//                    name = "Rick",
-//                    status = "Alive",
-//                    image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-//                    species = "Human",
-//                    favorite = false,
-//                ),
-//                CharacterDomain(
-//                    id = 2,
-//                    name = "Morty Smith",
-//                    status = "Alive",
-//                    image = "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-//                    species = "Human",
-//                    favorite = false,
-//                ),
-//            )
+
             val expectedResult = ResultApi.Success(charactersData)
             coEvery { charactersService.getCharacters(any()) } returns expectedResult
             coEvery { characterDao.getFavoriteCharacters() } returns emptyList()

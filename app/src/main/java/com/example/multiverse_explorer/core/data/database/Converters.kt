@@ -1,4 +1,4 @@
-package com.example.multiverse_explorer.characters.data.database
+package com.example.multiverse_explorer.core.data.database
 
 import androidx.room.TypeConverter
 

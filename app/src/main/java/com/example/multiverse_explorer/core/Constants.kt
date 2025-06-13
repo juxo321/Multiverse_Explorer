@@ -22,6 +22,8 @@ object Constants {
         const val CHARACTER_TABLE = "character_table"
         const val LOCATION_TABLE = "location_table"
         const val ORIGIN_TABLE = "origin_table"
+
+        const val EPISODE_TABLE = "episode_table"
     }
 
 

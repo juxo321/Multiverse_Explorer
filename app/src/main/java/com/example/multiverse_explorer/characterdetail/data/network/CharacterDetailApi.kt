@@ -1,6 +1,6 @@
 package com.example.multiverse_explorer.characterdetail.data.network
 
-import com.example.multiverse_explorer.characterdetail.data.model.CharacterDetailData
+import com.example.multiverse_explorer.characterdetail.data.network.model.CharacterDetailData
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

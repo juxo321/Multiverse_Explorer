@@ -1,6 +1,6 @@
 package com.example.multiverse_explorer.characterdetail.data.network
 
-import com.example.multiverse_explorer.characterdetail.data.model.EpisodeData
+import com.example.multiverse_explorer.characterdetail.data.network.model.EpisodeData
 import com.example.multiverse_explorer.core.ResultApi
 import com.example.multiverse_explorer.core.utils.NetworkFunctions
 import javax.inject.Inject

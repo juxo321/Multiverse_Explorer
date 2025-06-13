@@ -5,9 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.example.multiverse_explorer.characters.data.database.CharacterWithRelations
-import com.example.multiverse_explorer.characters.data.database.entities.CharacterEntity
+import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
 import com.example.multiverse_explorer.characters.data.database.entities.LocationEntity
 import com.example.multiverse_explorer.characters.data.database.entities.OriginEntity
 import kotlinx.coroutines.flow.Flow

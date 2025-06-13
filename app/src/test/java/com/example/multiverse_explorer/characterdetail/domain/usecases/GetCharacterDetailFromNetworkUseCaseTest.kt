@@ -2,7 +2,6 @@ package com.example.multiverse_explorer.characterdetail.domain.usecases
 
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.repository.CharacterDetailRepository
-import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import com.example.multiverse_explorer.core.ResultApi
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -15,17 +14,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
-class GetCharacterDetailUseCaseTest {
+class GetCharacterDetailFromNetworkUseCaseTest {
 
     @MockK
     private lateinit var characterDetailRepository: CharacterDetailRepository
 
-    private lateinit var getCharacterDetailUseCase: GetCharacterDetailUseCase
+    private lateinit var getCharacterDetailFromNetworkUseCase: GetCharacterDetailFromNetworkUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        getCharacterDetailUseCase = GetCharacterDetailUseCase(characterDetailRepository)
+        getCharacterDetailFromNetworkUseCase = GetCharacterDetailFromNetworkUseCase(characterDetailRepository)
     }
 
     @Test
@@ -48,15 +47,15 @@ class GetCharacterDetailUseCaseTest {
             )
             val expectedResult = ResultApi.Success(character)
 
-            coEvery { characterDetailRepository.getCharacterDetail(characterId = characterId) } returns expectedResult
+            coEvery { characterDetailRepository.getCharacterDetailFromNetwork(characterId = characterId) } returns expectedResult
 
             //When
-            val result = getCharacterDetailUseCase(characterId)
+            val result = getCharacterDetailFromNetworkUseCase(characterId)
 
             //Then
             assertTrue(result is ResultApi.Success)
             assertEquals(character, result.data)
-            coVerify(exactly = 1) { characterDetailRepository.getCharacterDetail(any()) }
+            coVerify(exactly = 1) { characterDetailRepository.getCharacterDetailFromNetwork(any()) }
         }
 
 
@@ -66,15 +65,15 @@ class GetCharacterDetailUseCaseTest {
             //Given
             val expectedResult = ResultApi.Error("Network error")
 
-            coEvery { characterDetailRepository.getCharacterDetail(any()) } returns expectedResult
+            coEvery { characterDetailRepository.getCharacterDetailFromNetwork(any()) } returns expectedResult
 
             //When
-            val result = getCharacterDetailUseCase(characterId = 1)
+            val result = getCharacterDetailFromNetworkUseCase(characterId = 1)
 
             //Then
             assertTrue(result is ResultApi.Error)
             assertEquals(expectedResult.message, result.message)
-            coVerify(exactly = 1) { characterDetailRepository.getCharacterDetail(any()) }
+            coVerify(exactly = 1) { characterDetailRepository.getCharacterDetailFromNetwork(any()) }
         }
 
 

@@ -28,7 +28,7 @@ fun DynamicTopAppBar(
     val currentDestination = navBackStackEntry?.destination?.route
 
     val title : String= when (currentDestination) {
-        Routes.CharacterDetail.route -> stringResource(R.string.dynamic_top_app_bar_character_title) // TODO Change for string resource
+        Routes.CharacterDetail.route -> stringResource(R.string.dynamic_top_app_bar_character_title)
         else -> {""}
     }
 

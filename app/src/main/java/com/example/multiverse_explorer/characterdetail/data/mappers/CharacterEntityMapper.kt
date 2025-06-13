@@ -1,10 +1,10 @@
 package com.example.multiverse_explorer.characterdetail.data.mappers
 
-import com.example.multiverse_explorer.characterdetail.data.network.model.CharacterDetailData
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
+import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
 
 
-fun CharacterDetailData.toDomain(): CharacterDetailDomain {
+fun CharacterEntity.toDomain(): CharacterDetailDomain {
     return CharacterDetailDomain(
         id = id,
         name = name,

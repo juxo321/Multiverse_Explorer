@@ -2,7 +2,7 @@ package com.example.multiverse_explorer.characters.data.database
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.multiverse_explorer.characters.data.database.entities.CharacterEntity
+import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
 import com.example.multiverse_explorer.characters.data.database.entities.LocationEntity
 import com.example.multiverse_explorer.characters.data.database.entities.OriginEntity
 

@@ -24,18 +24,6 @@ class CharactersRepositoryImp @Inject constructor(
     private val characterDao: CharacterDao
 ) : CharactersRepository {
 
-    override suspend fun getCharactersFromNetwork(selectedStatus: String) {
-        val result = NetworkFunctions.safeServiceCall(
-            serviceCall = { charactersService.getCharacters(selectedStatus = selectedStatus) },
-        )
-
-        if (result is ResultApi.Success) {
-            saveCharactersToDatabase(result.data)
-        }
-
-    }
-
-
     override suspend fun getCharactersFromDatabase(selectedStatus: String): Flow<ResultApi<List<CharacterDomain>>> {
         return characterDao.getCharactersByStatus(status = selectedStatus)
             .map<List<CharacterWithRelations>, ResultApi<List<CharacterDomain>>> { characters ->
@@ -46,6 +34,16 @@ class CharactersRepositoryImp @Inject constructor(
             }
     }
 
+    override suspend fun getCharactersFromNetwork(selectedStatus: String) {
+        val result = NetworkFunctions.safeServiceCallCharacters(
+            serviceCall = { charactersService.getCharacters(selectedStatus = selectedStatus) },
+        )
+
+        if (result is ResultApi.Success) {
+            saveCharactersToDatabase(result.data)
+        }
+
+    }
 
     override suspend fun saveCharactersToDatabase(charactersData: List<CharacterData>) {
 

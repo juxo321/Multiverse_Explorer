@@ -3,8 +3,11 @@ package com.example.multiverse_explorer.characterdetail.ui
 import app.cash.turbine.test
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
-import com.example.multiverse_explorer.characterdetail.domain.usecases.GetCharacterDetailUseCase
-import com.example.multiverse_explorer.characterdetail.domain.usecases.GetEpisodesByIdsUseCase
+import com.example.multiverse_explorer.characterdetail.domain.usecases.GetCharacterDetailFromDatabaseUseCase
+import com.example.multiverse_explorer.characterdetail.domain.usecases.GetCharacterDetailFromNetworkUseCase
+import com.example.multiverse_explorer.characterdetail.domain.usecases.GetEpisodesFromDatabaseUseCase
+import com.example.multiverse_explorer.characterdetail.domain.usecases.GetEpisodesFromNetworkUseCase
+import com.example.multiverse_explorer.characterdetail.domain.usecases.GetIdsFromEpisodesUseCase
 import com.example.multiverse_explorer.core.ResultApi
 import com.example.multiverse_explorer.core.domain.status.UiState
 import io.mockk.MockKAnnotations
@@ -27,10 +30,19 @@ import kotlin.test.assertTrue
 class CharacterDetailViewModelTest {
 
     @MockK
-    private lateinit var getCharacterDetailUseCase: GetCharacterDetailUseCase
+    private lateinit var getCharacterDetailFromDatabaseUseCase: GetCharacterDetailFromDatabaseUseCase
 
     @MockK
-    private lateinit var getEpisodesByIdsUseCase: GetEpisodesByIdsUseCase
+    private lateinit var getCharacterDetailFromNetworkUseCase: GetCharacterDetailFromNetworkUseCase
+
+    @MockK
+    private lateinit var getEpisodesFromDatabaseUseCase: GetEpisodesFromDatabaseUseCase
+
+    @MockK
+    private lateinit var getEpisodesFromNetworkUseCase: GetEpisodesFromNetworkUseCase
+
+    @MockK
+    private lateinit var getIdsFromEpisodesUseCase: GetIdsFromEpisodesUseCase
 
     private lateinit var characterDetailViewModel: CharacterDetailViewModel
 
@@ -49,7 +61,7 @@ class CharacterDetailViewModelTest {
     }
 
     @Test
-    fun `When the getCharacterDetail returns success then the character detail should be updated`() =
+    fun `When the getCharacterDetail succeed from database returns success then the character detail should be updated`() =
         runTest {
             //Given
 
@@ -68,6 +80,7 @@ class CharacterDetailViewModelTest {
                 ),
             )
             val expectedResult = ResultApi.Success(expectedCharacterDetail)
+            val episodeIds = listOf(1, 2, 3)
             val expectedEpisodes = listOf(
                 EpisodeDomain(
                     id = 1,
@@ -84,11 +97,18 @@ class CharacterDetailViewModelTest {
             )
             val expectedEpisodesResult = ResultApi.Success(expectedEpisodes)
 
-            coEvery { getCharacterDetailUseCase(characterId = characterId) } returns expectedResult
-            coEvery { getEpisodesByIdsUseCase(episodes = expectedCharacterDetail.episodes) } returns expectedEpisodesResult
+            coEvery { getCharacterDetailFromDatabaseUseCase(characterId = characterId) } returns expectedResult
+            coEvery { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) } returns expectedEpisodesResult
+            coEvery { getIdsFromEpisodesUseCase(episodes = expectedCharacterDetail.episodes) } returns episodeIds
 
             characterDetailViewModel =
-                CharacterDetailViewModel(getCharacterDetailUseCase, getEpisodesByIdsUseCase)
+                CharacterDetailViewModel(
+                    getCharacterDetailFromDatabaseUseCase,
+                    getCharacterDetailFromNetworkUseCase,
+                    getEpisodesFromDatabaseUseCase,
+                    getEpisodesFromNetworkUseCase,
+                    getIdsFromEpisodesUseCase
+                )
             //When
             characterDetailViewModel.getCharacterDetail(characterId = characterId)
 
@@ -101,94 +121,251 @@ class CharacterDetailViewModelTest {
                 assertEquals(expectedEpisodes, awaitItem())
                 cancel()
             }
+            coVerify(exactly = 1) { getCharacterDetailFromDatabaseUseCase(characterId = characterId) }
+            coVerify(exactly = 1) { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) }
+            coVerify(exactly = 1) { getIdsFromEpisodesUseCase(episodes = expectedCharacterDetail.episodes) }
             assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Success)
-            coVerify(exactly = 1) { getCharacterDetailUseCase(characterId = characterId) }
-            coVerify(exactly = 1) { getEpisodesByIdsUseCase(episodes = expectedCharacterDetail.episodes) }
         }
 
     @Test
-    fun `When getCharacterDetail fails then uiState should be Error`() = runTest {
-        //Given
-        val characterId = 1
-        val expectedResult = ResultApi.Error("Network error")
+    fun `When getCharacterDetail fails from database, then network is called and character detail should be updated`() =
+        runTest {
+            //Given
+            val characterId = 1
+            val expectedDatabaseResult = ResultApi.Error("Database error")
 
-        coEvery { getCharacterDetailUseCase(characterId = characterId) } returns expectedResult
+            val expectedCharacterDetail = CharacterDetailDomain(
+                id = 1,
+                name = "Rick",
+                status = "Alive",
+                species = "Human",
+                gender = "Male",
+                image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+                episodes = listOf(
+                    "https://rickandmortyapi.com/api/episode/1",
+                    "https://rickandmortyapi.com/api/episode/2",
+                    "https://rickandmortyapi.com/api/episode/3",
+                ),
+            )
+            val expectedNetworkResult = ResultApi.Success(expectedCharacterDetail)
 
-        characterDetailViewModel =
-            CharacterDetailViewModel(getCharacterDetailUseCase, getEpisodesByIdsUseCase)
+            val episodeIds = listOf(1, 2, 3)
+            val expectedEpisodes = listOf(
+                EpisodeDomain(
+                    id = 1,
+                    name = "Pilot"
+                ),
+                EpisodeDomain(
+                    id = 2,
+                    name = "Lawnmower Dog"
+                ),
+                EpisodeDomain(
+                    id = 3,
+                    name = "Anatomy Park"
+                )
+            )
+            val expectedEpisodesResult = ResultApi.Success(expectedEpisodes)
 
-        //When
-        characterDetailViewModel.getCharacterDetail(characterId = characterId)
+            coEvery { getCharacterDetailFromDatabaseUseCase(characterId = characterId) } returns expectedDatabaseResult
+            coEvery { getCharacterDetailFromNetworkUseCase(characterId = characterId) } returns expectedNetworkResult
+            coEvery { getIdsFromEpisodesUseCase(episodes = expectedCharacterDetail.episodes) } returns episodeIds
+            coEvery { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) } returns expectedEpisodesResult
 
-        //Then
-        coVerify(exactly = 1) { getCharacterDetailUseCase(characterId = characterId) }
-        coVerify(exactly = 0) { getEpisodesByIdsUseCase(any()) }
-        assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Error)
-    }
+
+            characterDetailViewModel =
+                CharacterDetailViewModel(
+                    getCharacterDetailFromDatabaseUseCase,
+                    getCharacterDetailFromNetworkUseCase,
+                    getEpisodesFromDatabaseUseCase,
+                    getEpisodesFromNetworkUseCase,
+                    getIdsFromEpisodesUseCase
+                )
+
+            //When
+            characterDetailViewModel.getCharacterDetail(characterId = characterId)
+
+            //Then
+            characterDetailViewModel.characterDetail.test {
+                assertEquals(expectedCharacterDetail, awaitItem())
+                cancel()
+            }
+            coVerify(exactly = 1) { getCharacterDetailFromDatabaseUseCase(characterId = characterId) }
+            coVerify(exactly = 1) { getCharacterDetailFromNetworkUseCase(characterId = characterId) }
+            coVerify(exactly = 1) { getIdsFromEpisodesUseCase(episodes = expectedCharacterDetail.episodes) }
+            coVerify(exactly = 1) { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) }
+            assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Success)
+        }
 
     @Test
-    fun `When character is not found then uiState should be Error`() = runTest {
+    fun `When getEpisodes succeed from database then the episodes should be updated`() = runTest {
         //Given
-        val characterId = 1
-        val expectedResult = ResultApi.Success(null)
-
-        coEvery { getCharacterDetailUseCase(characterId = characterId) } returns expectedResult
-
-        characterDetailViewModel =
-            CharacterDetailViewModel(getCharacterDetailUseCase, getEpisodesByIdsUseCase)
-
-        //When
-        characterDetailViewModel.getCharacterDetail(characterId = characterId)
-
-        //Then
-        coVerify(exactly = 1) { getCharacterDetailUseCase(characterId = characterId) }
-        coVerify(exactly = 0) { getEpisodesByIdsUseCase(any()) }
-        assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Error)
-    }
-
-    @Test
-    fun `When the getEpisodes fails then should be error state`() = runTest {
-        //Given
-        val expectedResult = ResultApi.Error("Network error")
         val episodes = listOf(
             "https://rickandmortyapi.com/api/episode/1",
             "https://rickandmortyapi.com/api/episode/2",
             "https://rickandmortyapi.com/api/episode/3",
         )
+        val episodeIds = listOf(1, 2, 3)
+        val expectedEpisodes = listOf(
+            EpisodeDomain(
+                id = 1,
+                name = "Pilot"
+            ),
+            EpisodeDomain(
+                id = 2,
+                name = "Lawnmower Dog"
+            ),
+            EpisodeDomain(
+                id = 3,
+                name = "Anatomy Park"
+            )
+        )
+        val expectedEpisodesResult = ResultApi.Success(expectedEpisodes)
 
-
-        coEvery { getEpisodesByIdsUseCase(any()) } returns expectedResult
+        coEvery { getIdsFromEpisodesUseCase(episodes = episodes) } returns episodeIds
+        coEvery { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) } returns expectedEpisodesResult
 
         characterDetailViewModel =
-            CharacterDetailViewModel(getCharacterDetailUseCase, getEpisodesByIdsUseCase)
+            CharacterDetailViewModel(
+                getCharacterDetailFromDatabaseUseCase,
+                getCharacterDetailFromNetworkUseCase,
+                getEpisodesFromDatabaseUseCase,
+                getEpisodesFromNetworkUseCase,
+                getIdsFromEpisodesUseCase
+            )
 
         //When
         characterDetailViewModel.getEpisodes(episodes = episodes)
 
         //Then
-        coVerify(exactly = 1) { getEpisodesByIdsUseCase(any()) }
-        assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Error)
+        characterDetailViewModel.episodes.test {
+            assertEquals(expectedEpisodes, awaitItem())
+            cancel()
+        }
+        coVerify(exactly = 1) { getIdsFromEpisodesUseCase(episodes = episodes) }
+        coVerify(exactly = 1) { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds)  }
+        assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Success)
     }
 
     @Test
-    fun `When episodes list is empty then uiState should be Error`() = runTest {
+    fun `When getEpisodes fails from database then, then the network is called and the episodes should be updated`() = runTest {
         //Given
+        val expectedDatabaseEpisodesResult = ResultApi.Error("Database error")
+
         val episodes = listOf(
             "https://rickandmortyapi.com/api/episode/1",
             "https://rickandmortyapi.com/api/episode/2",
             "https://rickandmortyapi.com/api/episode/3",
         )
-        val expectedResult = ResultApi.Success(emptyList<EpisodeDomain>())
+        val episodeIds = listOf(1, 2, 3)
+        val expectedEpisodes = listOf(
+            EpisodeDomain(
+                id = 1,
+                name = "Pilot"
+            ),
+            EpisodeDomain(
+                id = 2,
+                name = "Lawnmower Dog"
+            ),
+            EpisodeDomain(
+                id = 3,
+                name = "Anatomy Park"
+            )
+        )
+        val expectedNetworkEpisodesResult = ResultApi.Success(expectedEpisodes)
 
-        coEvery { getEpisodesByIdsUseCase(episodes = episodes) } returns expectedResult
+        coEvery { getIdsFromEpisodesUseCase(episodes = episodes) } returns episodeIds
+        coEvery { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) } returns expectedDatabaseEpisodesResult
+        coEvery { getEpisodesFromNetworkUseCase(episodeIds = episodeIds) } returns expectedNetworkEpisodesResult
 
-        characterDetailViewModel = CharacterDetailViewModel(getCharacterDetailUseCase, getEpisodesByIdsUseCase)
+        characterDetailViewModel =
+            CharacterDetailViewModel(
+                getCharacterDetailFromDatabaseUseCase,
+                getCharacterDetailFromNetworkUseCase,
+                getEpisodesFromDatabaseUseCase,
+                getEpisodesFromNetworkUseCase,
+                getIdsFromEpisodesUseCase
+            )
+
+        //When
+        characterDetailViewModel.getEpisodes(episodes = episodes)
+
+        //Then
+        characterDetailViewModel.episodes.test {
+            assertEquals(expectedEpisodes, awaitItem())
+            cancel()
+        }
+        coVerify(exactly = 1) { getIdsFromEpisodesUseCase(episodes = episodes) }
+        coVerify(exactly = 1) { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds)  }
+        coVerify(exactly = 1) { getEpisodesFromNetworkUseCase(episodeIds = episodeIds)  }
+        assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Success)
+    }
+
+    @Test
+    fun `When both database and network fail then uiState should be Error`() = runTest {
+        // Given
+        val episodes = listOf(
+            "https://rickandmortyapi.com/api/episode/1",
+            "https://rickandmortyapi.com/api/episode/2",
+            "https://rickandmortyapi.com/api/episode/3",
+        )
+        val episodeIds = listOf(1, 2, 3)
+        coEvery { getIdsFromEpisodesUseCase(episodes) } returns episodeIds
+        coEvery { getEpisodesFromDatabaseUseCase(episodeIds) } returns ResultApi.Error("Database error")
+        coEvery { getEpisodesFromNetworkUseCase(episodeIds) } returns ResultApi.Error("Network error")
+
+        characterDetailViewModel =
+            CharacterDetailViewModel(
+                getCharacterDetailFromDatabaseUseCase,
+                getCharacterDetailFromNetworkUseCase,
+                getEpisodesFromDatabaseUseCase,
+                getEpisodesFromNetworkUseCase,
+                getIdsFromEpisodesUseCase
+            )
+
+        // When
+        characterDetailViewModel.getEpisodes(episodes)
+
+        // Then
+        coVerify(exactly = 1) { getIdsFromEpisodesUseCase(episodes) }
+        coVerify(exactly = 1) { getEpisodesFromDatabaseUseCase(episodeIds) }
+        coVerify(exactly = 1) { getEpisodesFromNetworkUseCase(episodeIds) }
+        assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Error)
+    }
+
+
+    @Test
+    fun `When getEpisodes from network is empty then uiState should be Error`() = runTest {
+        //Given
+        val expectedDatabaseEpisodesResult = ResultApi.Error("Database error")
+
+        val episodes = listOf(
+            "https://rickandmortyapi.com/api/episode/1",
+            "https://rickandmortyapi.com/api/episode/2",
+            "https://rickandmortyapi.com/api/episode/3",
+        )
+        val episodeIds = listOf(1, 2, 3)
+        val expectedNetworkResult = ResultApi.Success(emptyList<EpisodeDomain>())
+
+        coEvery { getIdsFromEpisodesUseCase(episodes = episodes) } returns episodeIds
+        coEvery { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) } returns expectedDatabaseEpisodesResult
+        coEvery { getEpisodesFromNetworkUseCase(episodeIds = episodeIds) } returns expectedNetworkResult
+
+        characterDetailViewModel =
+            CharacterDetailViewModel(
+                getCharacterDetailFromDatabaseUseCase,
+                getCharacterDetailFromNetworkUseCase,
+                getEpisodesFromDatabaseUseCase,
+                getEpisodesFromNetworkUseCase,
+                getIdsFromEpisodesUseCase
+            )
 
         //When
         characterDetailViewModel.getEpisodes(episodes)
 
         //Then
-        coVerify(exactly = 1) { getEpisodesByIdsUseCase(episodes = episodes) }
+        coVerify(exactly = 1) { getIdsFromEpisodesUseCase(episodes) }
+        coVerify(exactly = 1) { getEpisodesFromDatabaseUseCase(episodeIds = episodeIds) }
+        coVerify(exactly = 1) { getEpisodesFromNetworkUseCase(episodeIds = episodeIds) }
         assertTrue(characterDetailViewModel.characterDetailUiState is UiState.Error)
     }
 

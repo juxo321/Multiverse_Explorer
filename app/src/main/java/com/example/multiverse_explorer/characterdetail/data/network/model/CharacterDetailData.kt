@@ -1,4 +1,4 @@
-package com.example.multiverse_explorer.characterdetail.data.model
+package com.example.multiverse_explorer.characterdetail.data.network.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

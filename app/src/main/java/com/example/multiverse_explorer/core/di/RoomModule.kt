@@ -2,7 +2,7 @@ package com.example.multiverse_explorer.core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.multiverse_explorer.characters.data.database.CharacterDatabase
+import com.example.multiverse_explorer.core.data.database.CharacterDatabase
 import com.example.multiverse_explorer.core.Constants.Database.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -17,10 +17,16 @@ import javax.inject.Singleton
 object RoomModule {
     @Singleton
     @Provides
-    fun provideRoom(@ApplicationContext context: Context) = Room.databaseBuilder(context, CharacterDatabase::class.java, DATABASE_NAME).build()
+    fun provideRoom(@ApplicationContext context: Context) = Room.databaseBuilder(context, CharacterDatabase::class.java, DATABASE_NAME)
+        .fallbackToDestructiveMigration(false)
+        .build()
 
     @Singleton
     @Provides
     fun provideCharacterDao(database: CharacterDatabase) = database.getCharacterDao()
+
+    @Singleton
+    @Provides
+    fun provideCharacterDetailDao(database: CharacterDatabase) = database.getCharacterDetailDao()
 
 }

@@ -1,4 +1,4 @@
-package com.example.multiverse_explorer.characters.data.database.entities
+package com.example.multiverse_explorer.core.data.database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

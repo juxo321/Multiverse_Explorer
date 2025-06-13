@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Multiverse_ExplorerTheme {
-                val navigationController = rememberNavController()
+                navigationController = rememberNavController()
                 Scaffold(
                     topBar = {
                         DynamicTopAppBar(

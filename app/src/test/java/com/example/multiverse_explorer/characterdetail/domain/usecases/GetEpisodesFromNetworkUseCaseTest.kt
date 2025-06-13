@@ -14,31 +14,26 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
-class GetEpisodesByIdsUseCaseTest {
+class GetEpisodesFromNetworkUseCaseTest {
 
 
     @MockK
     private lateinit var characterDetailRepository: CharacterDetailRepository
 
-    private lateinit var getEpisodesByIdsUseCase: GetEpisodesByIdsUseCase
+    private lateinit var getEpisodesFromNetworkUseCase: GetEpisodesFromNetworkUseCase
 
 
     @Before
     fun setUp(){
         MockKAnnotations.init(this)
-        getEpisodesByIdsUseCase = GetEpisodesByIdsUseCase(characterDetailRepository)
+        getEpisodesFromNetworkUseCase = GetEpisodesFromNetworkUseCase(characterDetailRepository)
     }
 
     @Test
     fun `When the repository returns success then the use case return Success state with the episodes`() =
         runTest {
             //Given
-            val episodesUrls = listOf(
-                "https://rickandmortyapi.com/api/episode/1",
-                "https://rickandmortyapi.com/api/episode/2",
-                "https://rickandmortyapi.com/api/episode/3",
-            )
-            val episodesIds = listOf(1,2,3)
+            val episodeIds = listOf(1,2,3)
             val episodes = listOf(
                 EpisodeDomain(
                     id = 1,
@@ -55,15 +50,15 @@ class GetEpisodesByIdsUseCaseTest {
             )
             val expectedResult = ResultApi.Success(episodes)
 
-            coEvery { characterDetailRepository.getEpisodes(episodeIds = episodesIds) } returns expectedResult
+            coEvery { characterDetailRepository.getEpisodesFromNetwork(episodeIds = episodeIds) } returns expectedResult
 
             //When
-            val result = getEpisodesByIdsUseCase(episodes = episodesUrls)
+            val result = getEpisodesFromNetworkUseCase(episodeIds = episodeIds)
 
             //Then
             assertTrue(result is ResultApi.Success)
             assertEquals(episodes, result.data)
-            coVerify(exactly = 1) { characterDetailRepository.getEpisodes(any()) }
+            coVerify(exactly = 1) { characterDetailRepository.getEpisodesFromNetwork(any()) }
         }
 
 
@@ -73,15 +68,15 @@ class GetEpisodesByIdsUseCaseTest {
             //Given
             val expectedResult = ResultApi.Error("Network error")
 
-            coEvery { characterDetailRepository.getEpisodes(any()) } returns expectedResult
+            coEvery { characterDetailRepository.getEpisodesFromNetwork(any()) } returns expectedResult
 
             //When
-            val result = getEpisodesByIdsUseCase(episodes = emptyList())
+            val result = getEpisodesFromNetworkUseCase(episodeIds = emptyList())
 
             //Then
             assertTrue(result is ResultApi.Error)
             assertEquals(expectedResult.message, result.message)
-            coVerify(exactly = 1) { characterDetailRepository.getEpisodes(any()) }
+            coVerify(exactly = 1) { characterDetailRepository.getEpisodesFromNetwork(any()) }
         }
 
 
