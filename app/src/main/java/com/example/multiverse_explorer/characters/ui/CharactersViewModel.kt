@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
+import com.example.multiverse_explorer.characters.domain.usecases.ClearAllDataUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersFromNetworkUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.UpdateFavoriteCharacterUseCase
@@ -30,6 +31,7 @@ class CharactersViewModel @Inject constructor(
     private val getCharactersFromNetworkUseCase: GetCharactersFromNetworkUseCase,
     private val getCharactersUseCase: GetCharactersUseCase,
     private val updateFavoriteCharacterUseCase: UpdateFavoriteCharacterUseCase,
+    private val clearAllDataUseCase: ClearAllDataUseCase
 ) : ViewModel() {
 
 
@@ -43,6 +45,9 @@ class CharactersViewModel @Inject constructor(
         private set
 
     var charactersUiState: UiState by mutableStateOf(UiState.Loading)
+        private set
+
+    var isRefreshing = mutableStateOf(false)
         private set
 
     private var databaseJob: Job? = null
@@ -72,7 +77,7 @@ class CharactersViewModel @Inject constructor(
                 .collect { result ->
                     when (result) {
                         is ResultApi.Success -> {
-                            if (result.data.isEmpty()) {
+                            if (result.data.isEmpty() && !isRefreshing.value) {
                                 charactersUiState = UiState.Error("There are no results!")
                             } else {
                                 _characters.value = if (isNameSorted.value) {
@@ -122,6 +127,16 @@ class CharactersViewModel @Inject constructor(
             _characters.value = _characters.value.sortedBy { it.name }
         } else {
             onStatusSelected(selectedStatus.value)
+        }
+    }
+
+
+    fun clearAllData(){
+        viewModelScope.launch {
+            isRefreshing.value = true
+            clearAllDataUseCase()
+            charactersUiState = UiState.Loading
+            getCharactersFromNetwork(selectedStatus = (if (_selectedStatus.value == ALL) "" else _selectedStatus.value))
         }
     }
 

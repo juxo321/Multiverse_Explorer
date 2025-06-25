@@ -32,7 +32,9 @@ class CharactersScreenKtTest {
     fun titleAppIsDisplayed() {
 
         composeTestRule.setContent {
-            TitleApp()
+            TitleApp(
+                onClearData = {}
+            )
         }
 
         composeTestRule.onNodeWithTag("icon_app").assertIsDisplayed()

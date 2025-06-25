@@ -43,6 +43,7 @@ import com.example.multiverse_explorer.core.Constants
 import com.example.multiverse_explorer.core.domain.status.UiState
 import com.example.multiverse_explorer.core.ui.components.ErrorState
 import com.example.multiverse_explorer.core.ui.components.LoadingState
+import com.example.multiverse_explorer.core.ui.components.Menu
 
 
 @Composable
@@ -58,7 +59,9 @@ fun CharactersScreen(
     val isNameSorted by charactersViewModel.isNameSorted
 
     Column(modifier = modifier) {
-        TitleApp()
+        TitleApp(onClearData = {
+            charactersViewModel.clearAllData()
+        })
         FilterButtons(
             selectedStatus = selectedStatus,
             isNameSorted = isNameSorted,
@@ -90,7 +93,9 @@ fun CharactersScreen(
 
 
 @Composable
-fun TitleApp() {
+fun TitleApp(
+    onClearData: () -> Unit,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -105,7 +110,7 @@ fun TitleApp() {
         )
         Text(
             text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineMedium,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.primary,
@@ -113,6 +118,7 @@ fun TitleApp() {
                 .padding(vertical = 16.dp, horizontal = 4.dp)
                 .testTag("title_app")
         )
+        Menu(onClearData = onClearData)
     }
 }
 

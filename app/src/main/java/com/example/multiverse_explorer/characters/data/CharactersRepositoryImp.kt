@@ -82,5 +82,11 @@ class CharactersRepositoryImp @Inject constructor(
             characterDao.updateFavoriteCharacter(characterId = characterId, isFavorite = isFavorite)
         }
 
+    override suspend fun clearAllData() {
+        withContext(Dispatchers.IO){
+            characterDao.clearAllData()
+        }
+    }
+
 
 }

@@ -16,4 +16,8 @@
     <string name="dynamic_top_app_bar_icon_description">Navigate back</string>
     <string name="dynamic_top_app_bar_character_title">Character Detail</string>
 
+    <!-- Menu -->
+    <string name="menu_delete_data_label">Clear data</string>
+    <string name="menu_description">More options</string>
+
 </resources>

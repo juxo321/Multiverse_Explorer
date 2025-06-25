@@ -36,4 +36,24 @@ interface CharacterDao {
     @Query("UPDATE character_table SET isFavorite = :isFavorite WHERE id = :characterId")
     fun updateFavoriteCharacter(characterId: Int, isFavorite:Boolean): Int
 
+    @Query("DELETE FROM character_table")
+    suspend fun deleteAllCharacters()
+
+    @Query("DELETE FROM location_table")
+    suspend fun deleteAllLocations()
+
+    @Query("DELETE FROM origin_table")
+    suspend fun deleteAllOrigins()
+
+    @Query("DELETE FROM episode_table")
+    suspend fun deleteAllEpisodes()
+
+    @Transaction
+    suspend fun clearAllData() {
+        deleteAllLocations()
+        deleteAllOrigins()
+        deleteAllEpisodes()
+        deleteAllCharacters()
+    }
+
 }

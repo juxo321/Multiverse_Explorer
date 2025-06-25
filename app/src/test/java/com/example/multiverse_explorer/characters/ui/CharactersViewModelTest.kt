@@ -3,6 +3,7 @@ package com.example.multiverse_explorer.characters.ui
 
 import app.cash.turbine.test
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
+import com.example.multiverse_explorer.characters.domain.usecases.ClearAllDataUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersFromNetworkUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.UpdateFavoriteCharacterUseCase
@@ -38,6 +39,10 @@ class CharactersViewModelTest {
 
     @MockK
     private lateinit var updateFavoriteCharacterUseCase: UpdateFavoriteCharacterUseCase
+
+    @MockK
+    private lateinit var clearAllDataUseCase: ClearAllDataUseCase
+
     private lateinit var charactersViewModel: CharactersViewModel
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 
@@ -84,7 +89,8 @@ class CharactersViewModelTest {
         charactersViewModel = CharactersViewModel(
             getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
             getCharactersUseCase = getCharactersUseCase,
-            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
         )
 
         //Then
@@ -130,7 +136,8 @@ class CharactersViewModelTest {
         charactersViewModel = CharactersViewModel(
             getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
             getCharactersUseCase = getCharactersUseCase,
-            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
         )
 
         coEvery { getCharactersUseCase(selectedStatus = "Alive") } returns flow {
@@ -167,7 +174,8 @@ class CharactersViewModelTest {
         charactersViewModel = CharactersViewModel(
             getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
             getCharactersUseCase = getCharactersUseCase,
-            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
         )
 
         //Then
@@ -221,7 +229,8 @@ class CharactersViewModelTest {
         charactersViewModel = CharactersViewModel(
             getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
             getCharactersUseCase = getCharactersUseCase,
-            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
         )
 
         //When
@@ -276,7 +285,8 @@ class CharactersViewModelTest {
         charactersViewModel = CharactersViewModel(
             getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
             getCharactersUseCase = getCharactersUseCase,
-            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
         )
 
         // When & Then
@@ -295,6 +305,60 @@ class CharactersViewModelTest {
 
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `when clearAllData is called should update ui state and get characters again from network`() = runTest {
+        //Given
+        val characters = listOf(
+            CharacterDomain(
+                id = 1,
+                name = "Rick",
+                status = "Alive",
+                image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+                species = "Human",
+                favorite = false,
+            ),
+            CharacterDomain(
+                id = 2,
+                name = "Morty Smith",
+                status = "Alive",
+                image = "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
+                species = "Human",
+                favorite = false,
+            ),
+        )
+
+        val expectedResult = ResultApi.Success(characters)
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow { emit(expectedResult) }
+        coEvery { clearAllDataUseCase() } returns Unit
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
+
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
+
+
+        charactersViewModel.characters.test {
+            val emptyList = awaitItem()
+            val charactersLoaded = awaitItem()
+
+            charactersViewModel.clearAllData()
+            assertEquals(true, charactersViewModel.isRefreshing.value)
+            assertEquals(UiState.Loading, charactersViewModel.charactersUiState)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        //Then
+        coVerify(exactly = 1) { clearAllDataUseCase() }
+        coVerify(exactly = 2) { getCharactersFromNetworkUseCase(selectedStatus = any()) }
+
+
+
     }
 
 

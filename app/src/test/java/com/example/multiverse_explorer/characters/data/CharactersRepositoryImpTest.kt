@@ -380,4 +380,16 @@ class CharactersRepositoryImpTest {
 
     }
 
+    @Test
+    fun `when all data is cleared`() = runTest {
+        //Given
+        coEvery { characterDao.clearAllData() } returns Unit
+
+        //When
+        charactersRepository.clearAllData()
+
+        //Then
+        coVerify( exactly = 1) { characterDao.clearAllData() }
+    }
+
 }
