@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -25,7 +26,8 @@ import com.example.multiverse_explorer.R
 
 @Composable
 fun Menu(
-    onClearData: () -> Unit
+    onClearData: () -> Unit,
+    navigateToSettings: () -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Box(
@@ -43,13 +45,21 @@ fun Menu(
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.menu_delete_data_label)) },
                 leadingIcon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
                 onClick = {
                     onClearData()
+
+                }
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.menu_settings_data_label)) },
+                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                onClick = {
+                    navigateToSettings()
                     expanded = !expanded
                 }
             )
@@ -61,5 +71,5 @@ fun Menu(
 @Preview(showBackground = true)
 @Composable
 fun MenuPreview() {
-    Menu(onClearData = {})
+    Menu(onClearData = {}, navigateToSettings = {})
 }

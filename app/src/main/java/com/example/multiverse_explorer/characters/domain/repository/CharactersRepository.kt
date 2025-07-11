@@ -1,6 +1,6 @@
 package com.example.multiverse_explorer.characters.domain.repository
 
-import com.example.multiverse_explorer.characters.data.network.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.rest.model.CharacterData
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import com.example.multiverse_explorer.core.ResultApi
 import kotlinx.coroutines.flow.Flow

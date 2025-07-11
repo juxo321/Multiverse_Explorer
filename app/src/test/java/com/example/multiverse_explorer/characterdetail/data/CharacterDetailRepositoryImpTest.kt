@@ -4,12 +4,12 @@ import com.example.multiverse_explorer.characterdetail.data.database.dao.Charact
 import com.example.multiverse_explorer.characterdetail.data.database.entities.EpisodeEntity
 import com.example.multiverse_explorer.characterdetail.data.mappers.toDomain
 import com.example.multiverse_explorer.characterdetail.data.mappers.toEntity
-import com.example.multiverse_explorer.characterdetail.data.network.model.CharacterDetailData
-import com.example.multiverse_explorer.characterdetail.data.network.model.EpisodeData
-import com.example.multiverse_explorer.characterdetail.data.network.model.LocationDetailData
-import com.example.multiverse_explorer.characterdetail.data.network.model.OriginDetailData
-import com.example.multiverse_explorer.characterdetail.data.network.CharacterDetailService
-import com.example.multiverse_explorer.characterdetail.data.network.EpisodeService
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.CharacterDetailData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.EpisodeData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.LocationDetailData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.OriginDetailData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.CharacterDetailRestDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.rest.EpisodeRestDataSource
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.repository.CharacterDetailRepository
 import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
@@ -28,13 +28,13 @@ class CharacterDetailRepositoryImpTest {
 
 
     @MockK
-    private lateinit var characterDetailService: CharacterDetailService
+    private lateinit var characterDetailService: CharacterDetailRestDataSource
 
     @MockK
     private lateinit var characterDetailDao: CharacterDetailDao
 
     @MockK
-    private lateinit var episodeService: EpisodeService
+    private lateinit var episodeService: EpisodeRestDataSource
 
     private lateinit var characterDetailRepository: CharacterDetailRepository
 

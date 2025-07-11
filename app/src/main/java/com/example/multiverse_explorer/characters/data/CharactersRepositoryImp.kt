@@ -1,26 +1,33 @@
 package com.example.multiverse_explorer.characters.data
 
+import android.util.Log
 import com.example.multiverse_explorer.characters.data.database.CharacterWithRelations
 import com.example.multiverse_explorer.characters.data.database.dao.CharacterDao
 import com.example.multiverse_explorer.characters.data.database.entities.LocationEntity
 import com.example.multiverse_explorer.characters.data.database.entities.OriginEntity
 import com.example.multiverse_explorer.characters.data.mappers.toDomain
 import com.example.multiverse_explorer.characters.data.mappers.toEntity
-import com.example.multiverse_explorer.characters.data.network.CharactersService
-import com.example.multiverse_explorer.characters.data.network.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.CharactersDataSource
+import com.example.multiverse_explorer.characters.data.network.grqphql.CharactersGraphQLDataSource
+import com.example.multiverse_explorer.characters.data.network.rest.CharactersRestDataSource
+import com.example.multiverse_explorer.characters.data.network.rest.model.CharacterData
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.data.datastore.SettingsDataStore
 import com.example.multiverse_explorer.core.utils.NetworkFunctions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CharactersRepositoryImp @Inject constructor(
-    private val charactersService: CharactersService,
+    private val settingsDataStore: SettingsDataStore,
+    private val charactersRestDataSource: CharactersRestDataSource,
+    private val charactersGraphQLDataSource: CharactersGraphQLDataSource,
     private val characterDao: CharacterDao
 ) : CharactersRepository {
 
@@ -35,9 +42,17 @@ class CharactersRepositoryImp @Inject constructor(
     }
 
     override suspend fun getCharactersFromNetwork(selectedStatus: String) {
+        val dataSource = settingsDataStore.getDataSource().first()
+
+        val dataSourceStrategy : CharactersDataSource = when (dataSource) {
+            "Rest" -> charactersRestDataSource
+            "GraphQL" -> charactersGraphQLDataSource
+            else -> charactersRestDataSource
+        }
+
         val result = NetworkFunctions.safeServiceCallCharacters(
-            serviceCall = { charactersService.getCharacters(selectedStatus = selectedStatus) },
-        )
+                serviceCall = { dataSourceStrategy.getCharacters(selectedStatus = selectedStatus) },
+            )
 
         if (result is ResultApi.Success) {
             saveCharactersToDatabase(result.data)
@@ -83,7 +98,7 @@ class CharactersRepositoryImp @Inject constructor(
         }
 
     override suspend fun clearAllData() {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             characterDao.clearAllData()
         }
     }

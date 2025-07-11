@@ -1,9 +1,10 @@
 package com.example.multiverse_explorer.core.di
 
-import com.example.multiverse_explorer.characterdetail.data.network.CharacterDetailApi
-import com.example.multiverse_explorer.characterdetail.data.network.EpisodeApi
-import com.example.multiverse_explorer.characters.data.network.CharactersApi
-import com.squareup.moshi.Moshi
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.network.okHttpClient
+import com.example.multiverse_explorer.characterdetail.data.network.rest.CharacterDetailApi
+import com.example.multiverse_explorer.characterdetail.data.network.rest.EpisodeApi
+import com.example.multiverse_explorer.characters.data.network.rest.CharactersApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,5 +67,13 @@ object NetworkModule {
     @Provides
     fun providesEpisodeApi(retrofit: Retrofit): EpisodeApi =
         retrofit.create(EpisodeApi::class.java)
+
+    @Singleton
+    @Provides
+    fun providesApolloClient(okHttpClient: OkHttpClient): ApolloClient =
+        ApolloClient.Builder().serverUrl("https://rickandmortyapi.com/graphql")
+            .okHttpClient(okHttpClient)
+            .build()
+
 
 }

@@ -1,0 +1,29 @@
+query GetCharacters($selectedStatus: String!) {
+    characters(page: 1, filter: { status: $selectedStatus }) {
+        info {
+            count
+            pages
+            next
+            prev
+        }
+        results {
+            id
+            name
+            status
+            species
+            type
+            gender
+            origin {
+                name
+            }
+            location {
+                name
+            }
+            image
+            episode {
+                id
+            }
+            created
+        }
+    }
+}

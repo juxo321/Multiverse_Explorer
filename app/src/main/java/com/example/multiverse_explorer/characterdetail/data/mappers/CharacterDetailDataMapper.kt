@@ -1,6 +1,6 @@
 package com.example.multiverse_explorer.characterdetail.data.mappers
 
-import com.example.multiverse_explorer.characterdetail.data.network.model.CharacterDetailData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.CharacterDetailData
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 
 
