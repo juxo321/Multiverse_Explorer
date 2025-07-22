@@ -1,5 +1,7 @@
 package com.example.multiverse_explorer.core
 
+import androidx.datastore.preferences.core.stringPreferencesKey
+
 
 object Constants {
 
@@ -24,6 +26,11 @@ object Constants {
         const val ORIGIN_TABLE = "origin_table"
 
         const val EPISODE_TABLE = "episode_table"
+    }
+
+    object DataStore {
+        const val DATA_STORE_NAME = "data_source"
+        val DATA_SOURCE_KEY = stringPreferencesKey( "dataSourceName")
     }
 
 

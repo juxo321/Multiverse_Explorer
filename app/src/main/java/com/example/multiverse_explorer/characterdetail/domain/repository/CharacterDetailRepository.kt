@@ -1,7 +1,7 @@
 package com.example.multiverse_explorer.characterdetail.domain.repository
 
 
-import com.example.multiverse_explorer.characterdetail.data.network.model.EpisodeData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.EpisodeData
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
 import com.example.multiverse_explorer.core.ResultApi

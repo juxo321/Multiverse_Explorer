@@ -20,6 +20,8 @@ ksp-version = "2.1.0-1.0.29"
 hilt-version = "2.52"
 hilt-compose-version = "1.2.0"
 room-version = "2.7.1"
+datastore-version = "1.1.7"
+apollo-version = "4.3.1"
 mockk-version = "1.13.13"
 cororutines-test-version = "1.9.0"
 core-testing-version = "2.2.0"
@@ -72,6 +74,11 @@ hilt-compose = {group ="androidx.hilt", name = "hilt-navigation-compose", versio
 room = {group ="androidx.room", name = "room-runtime", version.ref = "room-version"}
 room-compiler = {group ="androidx.room", name = "room-compiler", version.ref = "room-version"}
 
+#datastore
+datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore-version"}
+
+#Apollo
+apollo = {group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo-version"}
 
 #mock
 mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk-version"}
@@ -101,3 +108,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-version" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo-version"}

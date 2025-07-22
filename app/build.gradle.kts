@@ -4,6 +4,17 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.apollo)
+}
+
+apollo {
+    service("service") {
+        packageName.set("com.multiverse_explorer")
+        introspection {
+            endpointUrl.set("https://rickandmortyapi.com/graphql")
+//            schemaFile.set(file("app/src/main/graphql/com/multiverse_explorer/schema.graphqls"))
+        }
+    }
 }
 
 android {
@@ -99,6 +110,12 @@ dependencies {
     //room
     implementation(libs.room)
     ksp(libs.room.compiler)
+
+    //datastore
+    implementation(libs.datastore)
+
+    //apollo
+    implementation(libs.apollo)
 
     //Mockk
     implementation(libs.mockk)

@@ -29,6 +29,7 @@ fun DynamicTopAppBar(
 
     val title : String= when (currentDestination) {
         Routes.CharacterDetail.route -> stringResource(R.string.dynamic_top_app_bar_character_title)
+        Routes.Settings.route -> stringResource(R.string.dynamic_top_app_bar_settings_title)
         else -> {""}
     }
 

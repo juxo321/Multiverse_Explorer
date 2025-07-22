@@ -1,0 +1,12 @@
+query GetEpisodes($episodeIds: [ID!]!) {
+    episodesByIds(ids: $episodeIds) {
+        id
+        name
+        air_date
+        episode
+        characters {
+            id
+        }
+        created
+    }
+}

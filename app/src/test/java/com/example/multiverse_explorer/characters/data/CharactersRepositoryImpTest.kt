@@ -7,10 +7,10 @@ import com.example.multiverse_explorer.core.data.database.entities.CharacterEnti
 import com.example.multiverse_explorer.characters.data.database.entities.LocationEntity
 import com.example.multiverse_explorer.characters.data.database.entities.OriginEntity
 import com.example.multiverse_explorer.characters.data.mappers.toDomain
-import com.example.multiverse_explorer.characters.data.network.CharactersService
-import com.example.multiverse_explorer.characters.data.network.model.CharacterData
-import com.example.multiverse_explorer.characters.data.network.model.LocationData
-import com.example.multiverse_explorer.characters.data.network.model.OriginData
+import com.example.multiverse_explorer.characters.data.network.rest.CharactersRestDataSource
+import com.example.multiverse_explorer.characters.data.network.rest.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.rest.model.LocationData
+import com.example.multiverse_explorer.characters.data.network.rest.model.OriginData
 import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository
 import com.example.multiverse_explorer.core.ResultApi
 import io.mockk.MockKAnnotations
@@ -26,7 +26,7 @@ import kotlin.test.assertTrue
 
 class CharactersRepositoryImpTest {
     @MockK
-    private lateinit var charactersService: CharactersService
+    private lateinit var charactersService: CharactersRestDataSource
 
     @MockK
     private lateinit var characterDao: CharacterDao

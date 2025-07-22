@@ -15,9 +15,18 @@
     <!-- Dynamic top bar -->
     <string name="dynamic_top_app_bar_icon_description">Navigate back</string>
     <string name="dynamic_top_app_bar_character_title">Character Detail</string>
+    <string name="dynamic_top_app_bar_settings_title">Settings</string>
 
-    <!-- Menu -->
     <string name="menu_delete_data_label">Clear data</string>
+    <string name="menu_settings_data_label">Settings</string>
     <string name="menu_description">More options</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_screen_switch_description">Switch between REST for standard API calls or GraphQL for advanced queries.</string>
+    <string name="settings_screen_icon_info_description">Api call info</string>
+    <string name="settings_screen_select_label">Select API Source:</string>
+    <string name="settings_screen_rest_option">Rest</string>
+    <string name="settings_screen_graph_option">GraphQL API</string>
+
 
 </resources>

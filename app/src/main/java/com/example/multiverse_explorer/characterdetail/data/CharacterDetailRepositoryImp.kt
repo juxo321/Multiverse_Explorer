@@ -1,29 +1,34 @@
 package com.example.multiverse_explorer.characterdetail.data
 
 import android.util.Log
-import androidx.compose.runtime.DisposableEffect
 import com.example.multiverse_explorer.characterdetail.data.database.dao.CharacterDetailDao
 import com.example.multiverse_explorer.characterdetail.data.mappers.toDomain
 import com.example.multiverse_explorer.characterdetail.data.mappers.toEntity
-import com.example.multiverse_explorer.characterdetail.data.network.model.CharacterDetailData
-import com.example.multiverse_explorer.characterdetail.data.network.CharacterDetailService
-import com.example.multiverse_explorer.characterdetail.data.network.EpisodeService
-import com.example.multiverse_explorer.characterdetail.data.network.model.EpisodeData
+import com.example.multiverse_explorer.characterdetail.data.network.CharacterDetailDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.EpisodeDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.graphql.CharacterDetailGraphQLDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.graphql.EpisodeGraphQLDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.rest.CharacterDetailRestDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.rest.EpisodeRestDataSource
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.EpisodeData
 import com.example.multiverse_explorer.characterdetail.domain.model.CharacterDetailDomain
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
 import com.example.multiverse_explorer.characterdetail.domain.repository.CharacterDetailRepository
-import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
-import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.data.datastore.SettingsDataStore
 import com.example.multiverse_explorer.core.utils.NetworkFunctions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CharacterDetailRepositoryImp @Inject constructor(
-    private val characterDetailService: CharacterDetailService,
+    private val settingsDataStore: SettingsDataStore,
+    private val characterDetailRestDataSource: CharacterDetailRestDataSource,
+    private val characterDetailGraphQLDataSource: CharacterDetailGraphQLDataSource,
+    private val episodeRestDataSource: EpisodeRestDataSource,
+    private val episodeGraphQLDataSource: EpisodeGraphQLDataSource,
     private val characterDetailDao: CharacterDetailDao,
-    private val episodeService: EpisodeService
 ) : CharacterDetailRepository {
 
     override suspend fun getCharacterDetailFromDatabase(characterId: Int): ResultApi<CharacterDetailDomain> {
@@ -36,8 +41,16 @@ class CharacterDetailRepositoryImp @Inject constructor(
 
     override suspend fun getCharacterDetailFromNetwork(characterId: Int): ResultApi<CharacterDetailDomain?> {
         return withContext(Dispatchers.IO) {
+            val dataSource = settingsDataStore.getDataSource().first()
+
+            val dataSourceStrategy: CharacterDetailDataSource = when(dataSource){
+                "Rest" -> characterDetailRestDataSource
+                "GraphQL" -> characterDetailGraphQLDataSource
+                else -> characterDetailRestDataSource
+            }
+
             NetworkFunctions.safeServiceCallCharacterDetail(
-                serviceCall = { characterDetailService.getCharacterDetail(characterId = characterId) },
+                serviceCall = { dataSourceStrategy.getCharacterDetail(characterId = characterId) },
                 transform = { it?.toDomain() }
             )
         }
@@ -55,8 +68,18 @@ class CharacterDetailRepositoryImp @Inject constructor(
 
     override suspend fun getEpisodesFromNetwork(episodeIds: List<Int>): ResultApi<List<EpisodeDomain>> {
         return withContext(Dispatchers.IO){
+
+            val dataSource = settingsDataStore.getDataSource().first()
+
+            val dataSourceStrategy: EpisodeDataSource = when(dataSource){
+                "Rest" -> episodeRestDataSource
+                "GraphQL" -> episodeGraphQLDataSource
+                else -> episodeRestDataSource
+            }
+
+
             NetworkFunctions.safeServiceCallCharacterDetail(
-                serviceCall = { episodeService.getEpisodes(episodeIds = episodeIds) },
+                serviceCall = { dataSourceStrategy.getEpisodes(episodeIds = episodeIds) },
                 transform = {
                     saveEpisodesToDatabase(it)
                     it.map { episode -> episode.toDomain() }

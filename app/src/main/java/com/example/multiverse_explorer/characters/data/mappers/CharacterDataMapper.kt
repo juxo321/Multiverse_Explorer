@@ -1,7 +1,7 @@
 package com.example.multiverse_explorer.characters.data.mappers
 
 import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
-import com.example.multiverse_explorer.characters.data.network.model.CharacterData
+import com.example.multiverse_explorer.characters.data.network.rest.model.CharacterData
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
 
 

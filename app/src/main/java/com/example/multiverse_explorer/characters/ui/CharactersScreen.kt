@@ -50,6 +50,7 @@ import com.example.multiverse_explorer.core.ui.components.Menu
 fun CharactersScreen(
     charactersViewModel: CharactersViewModel = hiltViewModel(),
     navigateToCharacterDetail: (characterId: Int) -> Unit,
+    navigateToSettings: () -> Unit,
     modifier: Modifier
 ) {
 
@@ -59,9 +60,12 @@ fun CharactersScreen(
     val isNameSorted by charactersViewModel.isNameSorted
 
     Column(modifier = modifier) {
-        TitleApp(onClearData = {
-            charactersViewModel.clearAllData()
-        })
+        TitleApp(
+            onClearData = {
+                charactersViewModel.clearAllData()
+            },
+            navigateToSettings = navigateToSettings,
+        )
         FilterButtons(
             selectedStatus = selectedStatus,
             isNameSorted = isNameSorted,
@@ -95,6 +99,7 @@ fun CharactersScreen(
 @Composable
 fun TitleApp(
     onClearData: () -> Unit,
+    navigateToSettings: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -118,7 +123,10 @@ fun TitleApp(
                 .padding(vertical = 16.dp, horizontal = 4.dp)
                 .testTag("title_app")
         )
-        Menu(onClearData = onClearData)
+        Menu(
+            onClearData = onClearData,
+            navigateToSettings = navigateToSettings
+        )
     }
 }
 

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.multiverse_explorer.characterdetail.ui.CharacterDetailScreen
 import com.example.multiverse_explorer.characters.ui.CharactersScreen
+import com.example.multiverse_explorer.settings.ui.SettingsScreen
 
 
 @Composable
@@ -27,6 +28,9 @@ fun NavigationWrapper(
                         Routes.CharacterDetail.createRoute(characterId)
                     )
                 },
+                navigateToSettings = {
+                    navigationController.navigate(Routes.Settings.route)
+                },
                 modifier = modifier
             )
         }
@@ -40,6 +44,9 @@ fun NavigationWrapper(
                 characterId = it.arguments?.getInt("characterId") ?: 0,
                 modifier = modifier
             )
+        }
+        composable(Routes.Settings.route){
+            SettingsScreen(modifier = modifier)
         }
     }
 }

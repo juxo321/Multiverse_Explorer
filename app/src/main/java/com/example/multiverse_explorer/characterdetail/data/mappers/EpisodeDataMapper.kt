@@ -1,7 +1,7 @@
 package com.example.multiverse_explorer.characterdetail.data.mappers
 
 import com.example.multiverse_explorer.characterdetail.data.database.entities.EpisodeEntity
-import com.example.multiverse_explorer.characterdetail.data.network.model.EpisodeData
+import com.example.multiverse_explorer.characterdetail.data.network.rest.model.EpisodeData
 import com.example.multiverse_explorer.characterdetail.domain.model.EpisodeDomain
 
 
