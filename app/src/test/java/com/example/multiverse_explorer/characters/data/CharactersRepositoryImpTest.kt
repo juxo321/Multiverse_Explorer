@@ -3,16 +3,18 @@ package com.example.multiverse_explorer.characters.data
 import app.cash.turbine.test
 import com.example.multiverse_explorer.characters.data.database.CharacterWithRelations
 import com.example.multiverse_explorer.characters.data.database.dao.CharacterDao
-import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
 import com.example.multiverse_explorer.characters.data.database.entities.LocationEntity
 import com.example.multiverse_explorer.characters.data.database.entities.OriginEntity
 import com.example.multiverse_explorer.characters.data.mappers.toDomain
+import com.example.multiverse_explorer.characters.data.network.grqphql.CharactersGraphQLDataSource
 import com.example.multiverse_explorer.characters.data.network.rest.CharactersRestDataSource
 import com.example.multiverse_explorer.characters.data.network.rest.model.CharacterData
 import com.example.multiverse_explorer.characters.data.network.rest.model.LocationData
 import com.example.multiverse_explorer.characters.data.network.rest.model.OriginData
 import com.example.multiverse_explorer.characters.domain.repository.CharactersRepository
 import com.example.multiverse_explorer.core.ResultApi
+import com.example.multiverse_explorer.core.data.database.entities.CharacterEntity
+import com.example.multiverse_explorer.core.data.datastore.SettingsDataStore
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -25,8 +27,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CharactersRepositoryImpTest {
+
     @MockK
-    private lateinit var charactersService: CharactersRestDataSource
+    private lateinit var settingsDataStore: SettingsDataStore
+
+    @MockK
+    private lateinit var charactersRestDataSource: CharactersRestDataSource
+
+    @MockK
+    private lateinit var charactersGraphQLDataSource: CharactersGraphQLDataSource
 
     @MockK
     private lateinit var characterDao: CharacterDao
@@ -37,14 +46,16 @@ class CharactersRepositoryImpTest {
     fun setUp() {
         MockKAnnotations.init(this)
         charactersRepository = CharactersRepositoryImp(
-            charactersService = charactersService,
+            settingsDataStore = settingsDataStore,
+            charactersRestDataSource = charactersRestDataSource,
+            charactersGraphQLDataSource = charactersGraphQLDataSource,
             characterDao = characterDao
         )
     }
 
 
     @Test
-    fun `when service returns success then the repository save the characters into the database`() =
+    fun `when REST datasource returns success then the repository save the characters into the database`() =
         runTest {
             //Given
             val charactersData = listOf(
@@ -97,7 +108,8 @@ class CharactersRepositoryImpTest {
             )
 
             val expectedResult = ResultApi.Success(charactersData)
-            coEvery { charactersService.getCharacters(any()) } returns expectedResult
+            coEvery { settingsDataStore.getDataSource() } returns flow { emit("Rest") }
+            coEvery { charactersRestDataSource.getCharacters(any()) } returns expectedResult
             coEvery { characterDao.getFavoriteCharacters() } returns emptyList()
             coEvery { characterDao.insertOrigins(any()) } returns listOf(1L, 2L)
             coEvery { characterDao.insertLocations(any()) } returns listOf(1L, 2L)
@@ -107,25 +119,98 @@ class CharactersRepositoryImpTest {
             charactersRepository.getCharactersFromNetwork(selectedStatus = "")
 
             //Then
-            coVerify(exactly = 1) { charactersService.getCharacters(selectedStatus = "") }
+            coVerify(exactly = 1) { charactersRestDataSource.getCharacters(selectedStatus = "") }
+            coVerify(exactly = 0) { charactersGraphQLDataSource.getCharacters(any()) }
             coVerify(exactly = 1) { characterDao.insertOrigins(any()) }
             coVerify(exactly = 1) { characterDao.insertLocations(any()) }
             coVerify(exactly = 1) { characterDao.insertCharacters(any()) }
         }
 
+    @Test
+    fun `when GRAPHQL datasource returns success then the repository save the characters into the database`() =
+        runTest {
+            //Given
+            val charactersData = listOf(
+                CharacterData(
+                    id = 1,
+                    name = "Rick",
+                    status = "Alive",
+                    species = "Human",
+                    type = "",
+                    gender = "Male",
+                    origin = OriginData(
+                        name = "Earth (C-137)",
+                        url = "https://rickandmortyapi.com/api/location/1"
+                    ),
+                    location = LocationData(
+                        name = "Citadel of Ricks",
+                        url = "https://rickandmortyapi.com/api/location/3"
+                    ),
+                    image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+                    episode = listOf(
+                        "https://rickandmortyapi.com/api/episode/1",
+                        "https://rickandmortyapi.com/api/episode/2",
+                    ),
+                    url = "https://rickandmortyapi.com/api/character/1",
+                    created = "2017-11-04T18:48:46.250Z"
+                ),
+                CharacterData(
+                    id = 2,
+                    name = "Morty Smith",
+                    status = "Alive",
+                    species = "Human",
+                    type = "",
+                    gender = "Male",
+                    origin = OriginData(
+                        name = "unknown",
+                        url = ""
+                    ),
+                    location = LocationData(
+                        name = "Citadel of Ricks",
+                        url = "https://rickandmortyapi.com/api/location/3"
+                    ),
+                    image = "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
+                    episode = listOf(
+                        "https://rickandmortyapi.com/api/episode/1",
+                        "https://rickandmortyapi.com/api/episode/2",
+                    ),
+                    url = "https://rickandmortyapi.com/api/character/2",
+                    created = "2017-11-04T18:50:21.651Z"
+                )
+            )
+
+            val expectedResult = ResultApi.Success(charactersData)
+            coEvery { settingsDataStore.getDataSource() } returns flow { emit("GraphQL") }
+            coEvery { charactersGraphQLDataSource.getCharacters(any()) } returns expectedResult
+            coEvery { characterDao.getFavoriteCharacters() } returns emptyList()
+            coEvery { characterDao.insertOrigins(any()) } returns listOf(1L, 2L)
+            coEvery { characterDao.insertLocations(any()) } returns listOf(1L, 2L)
+            coEvery { characterDao.insertCharacters(any()) } returns listOf(1L, 2L)
+
+            //When
+            charactersRepository.getCharactersFromNetwork(selectedStatus = "")
+
+            //Then
+            coVerify(exactly = 0) { charactersRestDataSource.getCharacters(any()) }
+            coVerify(exactly = 1) { charactersGraphQLDataSource.getCharacters(selectedStatus = "") }
+            coVerify(exactly = 1) { characterDao.insertOrigins(any()) }
+            coVerify(exactly = 1) { characterDao.insertLocations(any()) }
+            coVerify(exactly = 1) { characterDao.insertCharacters(any()) }
+        }
 
     @Test
-    fun `when service returns error then the repository doesn't save to database`() = runTest {
+    fun `when data source returns error then the repository doesn't save to database`() = runTest {
         //Given
-
         val expectedResult = ResultApi.Error("Network error")
-        coEvery { charactersService.getCharacters(any()) } returns expectedResult
+        coEvery { settingsDataStore.getDataSource() } returns flow { emit("Rest") }
+        coEvery { charactersRestDataSource.getCharacters(any()) } returns expectedResult
 
         //When
         charactersRepository.getCharactersFromNetwork("")
 
         //Then
-        coVerify(exactly = 1) { charactersService.getCharacters("") }
+        coVerify(exactly = 1) { charactersRestDataSource.getCharacters("") }
+        coVerify(exactly = 0) { charactersGraphQLDataSource.getCharacters(any()) }
         coVerify(exactly = 0) { characterDao.insertCharacters(any()) }
     }
 
