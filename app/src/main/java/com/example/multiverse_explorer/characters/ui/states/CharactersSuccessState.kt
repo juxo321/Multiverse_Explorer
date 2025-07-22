@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.multiverse_explorer.R
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
+import com.example.multiverse_explorer.core.Constants.Filter.ALIVE
+import com.example.multiverse_explorer.core.Constants.Filter.DEAD
 
 
 @Composable
@@ -146,8 +148,8 @@ fun CharacterInfo(
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
             color = when (character.status) {
-                "Alive" -> MaterialTheme.colorScheme.primary
-                "Dead" -> MaterialTheme.colorScheme.error
+                ALIVE -> MaterialTheme.colorScheme.primary
+                DEAD -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             },
             modifier = Modifier.padding(bottom = 2.dp)

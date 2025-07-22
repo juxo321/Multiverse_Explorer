@@ -1,8 +1,19 @@
 <resources>
+    <!-- App General -->
     <string name="app_name">Multiverse_Explorer</string>
-    <string name="generic_error">Something goes wrong, please try again :(.</string>
-    <string name="error_image_description">Error Image</string>
-    <string name="title_app">RickAndMortyApp</string>
 
+    <!-- Error Messages -->
+    <string name="error_generic">Something goes wrong, please try again :(.</string>
+    <string name="error_image_description">Error Image</string>
+
+    <!-- Characters Screen -->
+    <string name="characters_screen_title">RickAndMortyApp</string>
+    <string name="characters_filter_status_label">Select status</string>
+    <string name="characters_sort_name_button">Name</string>
+    <string name="characters_sort_name_description">Sort by name</string>
+
+    <!-- Dynamic top bar -->
+    <string name="dynamic_top_app_bar_icon_description">Navigate back</string>
+    <string name="dynamic_top_app_bar_character_title">Character Detail</string>
 
 </resources>
