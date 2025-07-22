@@ -5,9 +5,9 @@ import com.example.multiverse_explorer.characterdetail.domain.repository.Charact
 import com.example.multiverse_explorer.core.ResultApi
 import javax.inject.Inject
 
-class GetCharacterDetailUseCase @Inject constructor(private val characterDetailRepository: CharacterDetailRepository) {
+class GetCharacterDetailFromNetworkUseCase @Inject constructor(private val characterDetailRepository: CharacterDetailRepository) {
 
     suspend operator fun invoke(characterId: Int): ResultApi<CharacterDetailDomain?> =
-        characterDetailRepository.getCharacterDetail(characterId = characterId)
+        characterDetailRepository.getCharacterDetailFromNetwork(characterId = characterId)
 
 }

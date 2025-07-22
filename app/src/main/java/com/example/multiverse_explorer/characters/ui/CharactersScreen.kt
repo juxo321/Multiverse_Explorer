@@ -43,6 +43,7 @@ import com.example.multiverse_explorer.core.Constants
 import com.example.multiverse_explorer.core.domain.status.UiState
 import com.example.multiverse_explorer.core.ui.components.ErrorState
 import com.example.multiverse_explorer.core.ui.components.LoadingState
+import com.example.multiverse_explorer.core.ui.components.Menu
 
 
 @Composable
@@ -54,17 +55,21 @@ fun CharactersScreen(
 
     val charactersUiState = charactersViewModel.charactersUiState
     val characters by charactersViewModel.characters.collectAsState(emptyList())
-    val selectedStatus by charactersViewModel.selectedStatus
+    val selectedStatus by charactersViewModel.selectedStatus.collectAsState()
+    val isNameSorted by charactersViewModel.isNameSorted
 
     Column(modifier = modifier) {
-        TitleApp()
+        TitleApp(onClearData = {
+            charactersViewModel.clearAllData()
+        })
         FilterButtons(
             selectedStatus = selectedStatus,
+            isNameSorted = isNameSorted,
             onStatusSelected = {
                 charactersViewModel.onStatusSelected(it)
             },
             onSortToggled = {
-                charactersViewModel.onSortByNameToggled(it)
+                charactersViewModel.onSortByNameToggled()
             }
         )
         Box {
@@ -88,7 +93,9 @@ fun CharactersScreen(
 
 
 @Composable
-fun TitleApp() {
+fun TitleApp(
+    onClearData: () -> Unit,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -103,7 +110,7 @@ fun TitleApp() {
         )
         Text(
             text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineMedium,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.primary,
@@ -111,6 +118,7 @@ fun TitleApp() {
                 .padding(vertical = 16.dp, horizontal = 4.dp)
                 .testTag("title_app")
         )
+        Menu(onClearData = onClearData)
     }
 }
 
@@ -118,13 +126,13 @@ fun TitleApp() {
 @Composable
 fun FilterButtons(
     selectedStatus: String,
+    isNameSorted: Boolean,
     onStatusSelected: (status: String) -> Unit,
-    onSortToggled: (Boolean) -> Unit
+    onSortToggled: () -> Unit
 ) {
 
     val statusOptions = Constants.Filter.STATUS_OPTIONS
     var expanded by remember { mutableStateOf(false) }
-    var isNameSorted by remember { mutableStateOf(false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -168,8 +176,7 @@ fun FilterButtons(
         }
         FilledIconButton(
             onClick = {
-                isNameSorted = !isNameSorted
-                onSortToggled(isNameSorted)
+                onSortToggled()
             },
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier

@@ -1,9 +1,6 @@
 package com.example.multiverse_explorer.characterdetail.data.network
 
-import com.example.multiverse_explorer.characterdetail.data.model.CharacterDetailData
-import com.example.multiverse_explorer.characterdetail.data.model.EpisodeData
-import com.example.multiverse_explorer.characterdetail.data.model.LocationDetailData
-import com.example.multiverse_explorer.characterdetail.data.model.OriginDetailData
+import com.example.multiverse_explorer.characterdetail.data.network.model.EpisodeData
 import com.example.multiverse_explorer.core.ResultApi
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

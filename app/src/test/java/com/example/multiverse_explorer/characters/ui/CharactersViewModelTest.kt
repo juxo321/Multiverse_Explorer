@@ -3,15 +3,20 @@ package com.example.multiverse_explorer.characters.ui
 
 import app.cash.turbine.test
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
+import com.example.multiverse_explorer.characters.domain.usecases.ClearAllDataUseCase
+import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersFromNetworkUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersUseCase
+import com.example.multiverse_explorer.characters.domain.usecases.UpdateFavoriteCharacterUseCase
 import com.example.multiverse_explorer.core.ResultApi
 import com.example.multiverse_explorer.core.domain.status.UiState
 import io.mockk.MockKAnnotations
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -28,6 +33,16 @@ class CharactersViewModelTest {
 
     @MockK
     private lateinit var getCharactersUseCase: GetCharactersUseCase
+
+    @MockK
+    private lateinit var getCharactersFromNetworkUseCase: GetCharactersFromNetworkUseCase
+
+    @MockK
+    private lateinit var updateFavoriteCharacterUseCase: UpdateFavoriteCharacterUseCase
+
+    @MockK
+    private lateinit var clearAllDataUseCase: ClearAllDataUseCase
+
     private lateinit var charactersViewModel: CharactersViewModel
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 
@@ -35,7 +50,7 @@ class CharactersViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
-        io.mockk.clearAllMocks()
+        clearAllMocks()
     }
 
     @After
@@ -67,18 +82,27 @@ class CharactersViewModelTest {
         )
         val expectedResult = ResultApi.Success(characters)
 
-        coEvery { getCharactersUseCase(selectedStatus = "") } returns expectedResult
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow { emit(expectedResult) }
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
 
         //When
-        charactersViewModel = CharactersViewModel(getCharactersUseCase)
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
 
         //Then
         assertEquals("All", charactersViewModel.selectedStatus.value)
         charactersViewModel.characters.test {
+            awaitItem()
             assertEquals(characters, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
         assertEquals(UiState.Success, charactersViewModel.charactersUiState)
+        coVerify(exactly = 1) { getCharactersUseCase(selectedStatus = "") }
+        coVerify(exactly = 1) { getCharactersFromNetworkUseCase(selectedStatus = "") }
     }
 
     @Test
@@ -103,23 +127,37 @@ class CharactersViewModelTest {
             ),
         )
         val expectedResult = ResultApi.Success(aliveCharacters)
-        coEvery { getCharactersUseCase(selectedStatus = "") } returns ResultApi.Success(emptyList())
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow {
+            emit(ResultApi.Success(emptyList())
+            )
+        }
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
 
-        charactersViewModel = CharactersViewModel(getCharactersUseCase)
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
 
-        coEvery { getCharactersUseCase(selectedStatus = "Alive") } returns expectedResult
+        coEvery { getCharactersUseCase(selectedStatus = "Alive") } returns flow {
+            emit(expectedResult)
+        }
 
         //When
         charactersViewModel.onStatusSelected(status = "Alive")
 
         //Then
         assertEquals("Alive", charactersViewModel.selectedStatus.value)
-        assertEquals(UiState.Success, charactersViewModel.charactersUiState)
         charactersViewModel.characters.test {
-            assertEquals(aliveCharacters, awaitItem())
+            awaitItem()
+            val filteredList = awaitItem()
+            assertEquals(aliveCharacters, filteredList)
             cancelAndIgnoreRemainingEvents()
         }
-        coVerify(exactly = 2) { getCharactersUseCase(any()) }
+        assertEquals(UiState.Success, charactersViewModel.charactersUiState)
+        coVerify(exactly = 1) { getCharactersUseCase(any()) }
+        coVerify(exactly = 2) { getCharactersFromNetworkUseCase(any()) }
 
     }
 
@@ -127,24 +165,34 @@ class CharactersViewModelTest {
     @Test
     fun `when getCharacters returns error then the state should be error`() = runTest {
         //Given
-        val expectedResult = ResultApi.Error("Network error")
-        coEvery { getCharactersUseCase(selectedStatus = "") } returns expectedResult
+        val expectedResult = ResultApi.Error("Database error")
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow { emit(expectedResult) }
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
 
 
         //When
-        charactersViewModel = CharactersViewModel(getCharactersUseCase)
-
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
 
         //Then
         assertEquals("All", charactersViewModel.selectedStatus.value)
-        coVerify(exactly = 1) { getCharactersUseCase(any()) }
+        charactersViewModel.characters.test {
+            awaitItem()
+            cancelAndIgnoreRemainingEvents()
+        }
         val error = charactersViewModel.charactersUiState as UiState.Error
         assertEquals(expectedResult.message, error.message)
         assertTrue(charactersViewModel.charactersUiState is UiState.Error)
+        coVerify(exactly = 1) { getCharactersUseCase(any()) }
+        coVerify(exactly = 1) { getCharactersFromNetworkUseCase(any()) }
     }
 
     @Test
-    fun `when toggleFavorite called then character favourite status is updated`() = runTest {
+    fun `when toggleFavorite called then character favourite status is called`() = runTest {
         //Given
         val characters = listOf(
             CharacterDomain(
@@ -166,27 +214,103 @@ class CharactersViewModelTest {
         )
 
         val expectedResult = ResultApi.Success(characters)
+        val updatedCharacters = characters.map {
+            if (it.id == 1) it.copy(favorite = true) else it
+        }
+        val updatedResult = ResultApi.Success(updatedCharacters)
 
-        coEvery { getCharactersUseCase(selectedStatus = "") } returns expectedResult
-        charactersViewModel = CharactersViewModel(getCharactersUseCase)
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow {
+            emit(expectedResult)
+            emit(updatedResult)
+        }
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
+        coEvery { updateFavoriteCharacterUseCase(characterId = 1, isFavorite = any()) } returns 1
+
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
 
         //When
         charactersViewModel.characters.test {
-            awaitItem()
+            val emptyList = awaitItem()
+            val charactersLoaded = awaitItem()
 
             //When
             charactersViewModel.toggleFavorite(1)
+            val updatedList = awaitItem()
 
-            val updatedCharacters = awaitItem()
-            assertEquals(true, updatedCharacters.find { it.id == 1 }?.favorite)
+            assertEquals(true, updatedList.find { it.id == 1 }?.favorite)
+            cancelAndIgnoreRemainingEvents()
+        }
+        coVerify(exactly = 1) { updateFavoriteCharacterUseCase(any(), any()) }
+    }
+
+    @Test
+    fun `when onSortByNameToggled is called should sort characters`() = runTest {
+        // Given
+        val unsortedCharacters = listOf(
+            CharacterDomain(
+                id = 1,
+                name = "Rick",
+                status = "Alive",
+                image = "test.jpeg",
+                species = "Human",
+                favorite = false
+            ),
+            CharacterDomain(
+                id = 2,
+                name = "Morty",
+                status = "Alive",
+                image = "test.jpeg",
+                species = "Human",
+                favorite = false
+            ),
+            CharacterDomain(
+                id = 3,
+                name = "Beth",
+                status = "Alive",
+                image = "test.jpeg",
+                species = "Human",
+                favorite = false
+            )
+        )
+
+        val expectedResult = ResultApi.Success(unsortedCharacters)
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow { emit(expectedResult) }
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
+
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
+
+        // When & Then
+        charactersViewModel.characters.test {
+            val emptyList = awaitItem()
+            val charactersLoaded = awaitItem()
+
+
+            charactersViewModel.onSortByNameToggled()
+
+            val sorted = awaitItem()
+            assertEquals("Beth", sorted[0].name)
+            assertEquals("Morty", sorted[1].name)
+            assertEquals("Rick", sorted[2].name)
+
+
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `when onSortByNameToggled enabled then should sort characters by name`() = runTest {
-        // Given
-        val unsortedCharacters = listOf(
+    fun `when clearAllData is called should update ui state and get characters again from network`() = runTest {
+        //Given
+        val characters = listOf(
             CharacterDomain(
                 id = 1,
                 name = "Rick",
@@ -204,24 +328,38 @@ class CharactersViewModelTest {
                 favorite = false,
             ),
         )
-        coEvery { getCharactersUseCase(selectedStatus = "") } returns ResultApi.Success(unsortedCharacters)
-        charactersViewModel = CharactersViewModel(getCharactersUseCase)
 
-        // When
+        val expectedResult = ResultApi.Success(characters)
+        coEvery { getCharactersUseCase(selectedStatus = "") } returns flow { emit(expectedResult) }
+        coEvery { clearAllDataUseCase() } returns Unit
+        coEvery { getCharactersFromNetworkUseCase(any()) } returns Unit
+
+        charactersViewModel = CharactersViewModel(
+            getCharactersFromNetworkUseCase = getCharactersFromNetworkUseCase,
+            getCharactersUseCase = getCharactersUseCase,
+            updateFavoriteCharacterUseCase = updateFavoriteCharacterUseCase,
+            clearAllDataUseCase = clearAllDataUseCase
+        )
+
+
         charactersViewModel.characters.test {
-            awaitItem()
+            val emptyList = awaitItem()
+            val charactersLoaded = awaitItem()
 
-            charactersViewModel.onSortByNameToggled(true)
+            charactersViewModel.clearAllData()
+            assertEquals(true, charactersViewModel.isRefreshing.value)
+            assertEquals(UiState.Loading, charactersViewModel.charactersUiState)
 
-            // Then
-            val sortedCharacters = awaitItem()
-            assertEquals("Morty Smith", sortedCharacters[0].name)
-            assertEquals("Rick", sortedCharacters[1].name)
             cancelAndIgnoreRemainingEvents()
         }
+
+        //Then
+        coVerify(exactly = 1) { clearAllDataUseCase() }
+        coVerify(exactly = 2) { getCharactersFromNetworkUseCase(selectedStatus = any()) }
+
+
+
     }
-
-
 
 
 }

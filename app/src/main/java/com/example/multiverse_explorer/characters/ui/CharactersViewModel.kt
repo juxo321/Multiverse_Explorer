@@ -1,103 +1,142 @@
 package com.example.multiverse_explorer.characters.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.multiverse_explorer.characters.domain.model.CharacterDomain
+import com.example.multiverse_explorer.characters.domain.usecases.ClearAllDataUseCase
+import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersFromNetworkUseCase
 import com.example.multiverse_explorer.characters.domain.usecases.GetCharactersUseCase
+import com.example.multiverse_explorer.characters.domain.usecases.UpdateFavoriteCharacterUseCase
 import com.example.multiverse_explorer.core.Constants.Filter.ALL
 import com.example.multiverse_explorer.core.ResultApi
 import com.example.multiverse_explorer.core.domain.status.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class CharactersViewModel @Inject constructor(
-    private val getCharactersUseCase: GetCharactersUseCase
+    private val getCharactersFromNetworkUseCase: GetCharactersFromNetworkUseCase,
+    private val getCharactersUseCase: GetCharactersUseCase,
+    private val updateFavoriteCharacterUseCase: UpdateFavoriteCharacterUseCase,
+    private val clearAllDataUseCase: ClearAllDataUseCase
 ) : ViewModel() {
 
 
     private val _characters: MutableStateFlow<List<CharacterDomain>> = MutableStateFlow(emptyList())
     val characters: StateFlow<List<CharacterDomain>> = _characters
 
-    var selectedStatus = mutableStateOf(ALL)
+    private val _selectedStatus = MutableStateFlow(ALL)
+    val selectedStatus: StateFlow<String> = _selectedStatus
+
+    var isNameSorted = mutableStateOf(false)
         private set
 
     var charactersUiState: UiState by mutableStateOf(UiState.Loading)
         private set
 
-    private val favoriteCharacters: MutableList<Int> = mutableListOf()
+    var isRefreshing = mutableStateOf(false)
+        private set
+
+    private var databaseJob: Job? = null
 
 
     init {
-        onStatusSelected(status = selectedStatus.value)
+        charactersUiState = UiState.Loading
+        getCharactersFromDatabase()
+        getCharactersFromNetwork(selectedStatus = (if (_selectedStatus.value == ALL) "" else _selectedStatus.value))
     }
 
     fun onStatusSelected(status: String) {
-        selectedStatus.value = status
+        _selectedStatus.value = status
         charactersUiState = UiState.Loading
-        getCharacters((if (status == ALL) "" else status))
+        getCharactersFromNetwork((if (status == ALL) "" else status))
+        getCharactersFromDatabase()
     }
 
-
-    private fun getCharacters(selectedStatus: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = getCharactersUseCase(selectedStatus = selectedStatus)
-            when (result) {
-                is ResultApi.Success -> {
-                    if (result.data.isEmpty()) {
-                        charactersUiState = UiState.Error("There are no results!")
-                    } else {
-                        _characters.value = result.data.map { character ->
-                            character.copy(favorite = favoriteCharacters.contains(character.id))
+    private fun getCharactersFromDatabase() {
+        databaseJob?.cancel()
+        databaseJob = viewModelScope.launch(Dispatchers.IO) {
+            _selectedStatus
+                .flatMapLatest { status ->
+                    val newSelectedStatus = if (status == ALL) "" else status
+                    getCharactersUseCase(selectedStatus = newSelectedStatus)
+                }
+                .collect { result ->
+                    when (result) {
+                        is ResultApi.Success -> {
+                            if (result.data.isEmpty() && !isRefreshing.value) {
+                                charactersUiState = UiState.Error("There are no results!")
+                            } else {
+                                _characters.value = if (isNameSorted.value) {
+                                    result.data.sortedBy { it.name }
+                                } else {
+                                    result.data
+                                }
+                                withContext(Dispatchers.Main) {
+                                    charactersUiState = UiState.Success
+                                }
+                            }
                         }
-                        charactersUiState = UiState.Success
+
+                        is ResultApi.Error -> {
+                            charactersUiState = UiState.Error(result.message)
+                        }
                     }
                 }
 
-                is ResultApi.Error -> charactersUiState = UiState.Error(result.message)
+        }
+    }
 
-            }
+
+    private fun getCharactersFromNetwork(selectedStatus: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCharactersFromNetworkUseCase(selectedStatus = selectedStatus)
         }
     }
 
     fun toggleFavorite(characterId: Int) {
-        _characters.value = characters.value.map {
-            if (it.id == characterId) {
-                it.copy(favorite = !it.favorite).also { newCharacter ->
-                    updateFavoritesList(
-                        characterId = newCharacter.id,
-                        isFavorite = newCharacter.favorite
+        viewModelScope.launch(Dispatchers.IO) {
+            characters.value.forEach {
+                if (it.id == characterId) {
+                    updateFavoriteCharacterUseCase(
+                        characterId = characterId,
+                        isFavorite = !it.favorite
                     )
                 }
-            } else {
-                it
             }
         }
     }
 
 
-    private fun updateFavoritesList(characterId: Int, isFavorite: Boolean) {
-        if (isFavorite && !favoriteCharacters.contains(characterId)) {
-            favoriteCharacters.add(characterId)
-        } else if (!isFavorite && favoriteCharacters.contains(characterId)) {
-            favoriteCharacters.remove(characterId)
-        }
-    }
-
-    fun onSortByNameToggled(enabled: Boolean) {
-        if (enabled) {
+    fun onSortByNameToggled() {
+        isNameSorted.value = !isNameSorted.value
+        if (isNameSorted.value) {
             _characters.value = _characters.value.sortedBy { it.name }
         } else {
             onStatusSelected(selectedStatus.value)
+        }
+    }
+
+
+    fun clearAllData(){
+        viewModelScope.launch {
+            isRefreshing.value = true
+            clearAllDataUseCase()
+            charactersUiState = UiState.Loading
+            getCharactersFromNetwork(selectedStatus = (if (_selectedStatus.value == ALL) "" else _selectedStatus.value))
         }
     }
 
