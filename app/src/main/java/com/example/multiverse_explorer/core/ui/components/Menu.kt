@@ -3,6 +3,7 @@ package com.example.multiverse_explorer.core.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.multiverse_explorer.BuildConfig
 import com.example.multiverse_explorer.R
 
 
@@ -32,8 +34,7 @@ fun Menu(
     var expanded by rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+            .size(24.dp)
     ) {
         IconButton(
             onClick = { expanded = !expanded }
@@ -55,14 +56,16 @@ fun Menu(
 
                 }
             )
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.menu_settings_data_label)) },
-                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-                onClick = {
-                    navigateToSettings()
-                    expanded = !expanded
-                }
-            )
+            if (BuildConfig.DEBUG ){
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.menu_settings_data_label)) },
+                    leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                    onClick = {
+                        navigateToSettings()
+                        expanded = !expanded
+                    }
+                )
+            }
         }
     }
 }
@@ -71,5 +74,8 @@ fun Menu(
 @Preview(showBackground = true)
 @Composable
 fun MenuPreview() {
-    Menu(onClearData = {}, navigateToSettings = {})
+    Menu(
+        onClearData = {},
+        navigateToSettings = {},
+    )
 }

@@ -21,7 +21,7 @@ fun CharacterDetailScreen(
     characterId: Int,
     modifier: Modifier
 ) {
-    LaunchedEffect(true) {
+    LaunchedEffect(characterId) {
         characterDetailViewModel.getCharacterDetail(characterId)
     }
 

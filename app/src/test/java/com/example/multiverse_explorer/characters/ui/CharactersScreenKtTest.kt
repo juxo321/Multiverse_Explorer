@@ -33,7 +33,8 @@ class CharactersScreenKtTest {
 
         composeTestRule.setContent {
             TitleApp(
-                onClearData = {}
+                onClearData = {},
+                navigateToSettings = {}
             )
         }
 
@@ -107,6 +108,7 @@ class CharactersScreenKtTest {
             CharactersScreen(
                 charactersViewModel = mockViewModel,
                 navigateToCharacterDetail = {},
+                navigateToSettings = {},
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -126,6 +128,7 @@ class CharactersScreenKtTest {
                 CharactersScreen(
                     charactersViewModel = mockViewModel,
                     navigateToCharacterDetail = {},
+                    navigateToSettings = {},
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -169,6 +172,7 @@ class CharactersScreenKtTest {
             CharactersScreen(
                 charactersViewModel = mockViewModel,
                 navigateToCharacterDetail = {},
+                navigateToSettings = {},
                 modifier = Modifier.fillMaxSize()
             )
         }

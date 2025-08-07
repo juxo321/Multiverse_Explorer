@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.window.core.layout.WindowSizeClass
 import com.example.multiverse_explorer.characterdetail.ui.CharacterDetailScreen
 import com.example.multiverse_explorer.characters.ui.CharactersScreen
 import com.example.multiverse_explorer.settings.ui.SettingsScreen
@@ -15,6 +16,7 @@ import com.example.multiverse_explorer.settings.ui.SettingsScreen
 @Composable
 fun NavigationWrapper(
     navigationController: NavHostController,
+    windowSize: WindowSizeClass,
     modifier: Modifier
 ) {
     NavHost(
@@ -31,6 +33,7 @@ fun NavigationWrapper(
                 navigateToSettings = {
                     navigationController.navigate(Routes.Settings.route)
                 },
+                windowSize = windowSize,
                 modifier = modifier
             )
         }
