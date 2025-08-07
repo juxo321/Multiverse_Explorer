@@ -118,6 +118,12 @@ dependencies {
     //apollo
     implementation(libs.apollo)
 
+    //material3
+    //implementation(libs.material3)
+
+    //adaptive-android
+    implementation(libs.androidx.adaptive.android)
+
     //Mockk
     implementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)

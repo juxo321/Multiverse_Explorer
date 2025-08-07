@@ -1,6 +1,8 @@
 package com.example.multiverse_explorer.characters.ui
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -50,6 +52,9 @@ class CharactersViewModel @Inject constructor(
     var isRefreshing = mutableStateOf(false)
         private set
 
+    var selectedCharacterId = mutableIntStateOf(0)
+        private set
+
     private var databaseJob: Job? = null
 
 
@@ -85,6 +90,7 @@ class CharactersViewModel @Inject constructor(
                                 } else {
                                     result.data
                                 }
+                                selectedCharacterId.intValue = characters.value.first().id
                                 withContext(Dispatchers.Main) {
                                     charactersUiState = UiState.Success
                                 }
@@ -125,9 +131,14 @@ class CharactersViewModel @Inject constructor(
         isNameSorted.value = !isNameSorted.value
         if (isNameSorted.value) {
             _characters.value = _characters.value.sortedBy { it.name }
+            selectedCharacterId.intValue = characters.value.first().id
         } else {
             onStatusSelected(selectedStatus.value)
         }
+    }
+
+    fun onCharacterSelected(characterId: Int){
+        selectedCharacterId.intValue = characterId
     }
 
 

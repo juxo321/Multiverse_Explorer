@@ -3,6 +3,7 @@ package com.example.multiverse_explorer.core.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
@@ -33,8 +34,7 @@ fun Menu(
     var expanded by rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+            .size(24.dp)
     ) {
         IconButton(
             onClick = { expanded = !expanded }
@@ -74,5 +74,8 @@ fun Menu(
 @Preview(showBackground = true)
 @Composable
 fun MenuPreview() {
-    Menu(onClearData = {}, navigateToSettings = {})
+    Menu(
+        onClearData = {},
+        navigateToSettings = {},
+    )
 }
